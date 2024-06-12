@@ -1,0 +1,158 @@
+﻿<UserControl x:Class="SigningTool.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SigningTool.Views"
+             
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
+    <Border BorderThickness="2" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" CornerRadius="15" Margin="10">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="10"/>
+        </Border.Effect>
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0" Header="ENVIROMENT" Margin="5"  Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <GroupBox  Grid.Row="0" Header="MANUFACTURER" Margin="3,2" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" FontSize="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Header="DEVELOPMENT" FontSize="14">
+                                <ComboBox  SelectedIndex="{Binding Path=SIManuDev}" ItemsSource="{Binding Path=ManuList}" Margin="5">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding SelectedCommandManuDev}" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>                                    
+                                </ComboBox>
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="PRODUCTION" FontSize="14">
+                                <ComboBox  Margin="5" SelectedIndex="{Binding Path=SIManuProd}" ItemsSource="{Binding Path=ManuList}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding SelectedCommandManuProd}" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>                                    
+                                </ComboBox>
+                            </GroupBox>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="SIX"  Grid.Row="1" Margin="5" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Header="QA" Margin="2" Grid.Row="0" Grid.Column="0" FontSize="16">
+                                <ComboBox  SelectedIndex="{Binding Path=SIQA}" Width="200" Margin="0,2" FontSize="14">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding SelectedCommandQA}" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="UNMANAGED"/>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="KMS"/>
+                                    </ComboBoxItem>
+                                </ComboBox>
+                            </GroupBox>
+                            <GroupBox Header="ATM" Margin="2" Grid.Row="0" Grid.Column="1" FontSize="16">
+                                <ComboBox  SelectedIndex="{Binding Path=SIATM}" Width="200" Margin="0,2" FontSize="14">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <i:InvokeCommandAction Command="{Binding SelectedCommandATM}" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="UNMANAGED"/>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="TEST-KMS"/>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="PROD-KMS"/>
+                                    </ComboBoxItem>
+                                </ComboBox>
+                            </GroupBox>
+                        </Grid>
+                    </GroupBox>
+                </Grid> 
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="ATM-DEVICE" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+                <ComboBox  SelectedIndex="{Binding Path=SIATM_DEVICE}" Width="200" Margin="0,2" FontSize="14">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding SelectedCommandATMDevice}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <ComboBoxItem>
+                        <TextBlock Text="TEST-UNMANAGED"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <TextBlock Text="TEST-KMS"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <TextBlock Text="PROD-KMS"/>
+                    </ComboBoxItem>
+                </ComboBox>
+            </GroupBox>
+            <GroupBox Grid.Row="2" Header="SESSION DATA" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Display Name" Grid.Column="0" Grid.Row="0" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold"/>
+                    <TextBlock Text="User ID" Grid.Column="1" Grid.Row="0" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold" />
+                    <TextBox Text="{Binding Path=FirstName}" Grid.Column="0" Grid.Row="1" Style="{DynamicResource GroupBoxTextBox}" />
+                    <TextBox Text="{Binding Path=LastName}" Grid.Column="1" Grid.Row="1" Style="{DynamicResource GroupBoxTextBox}" />
+                    <TextBlock Text="STORE PASSWORD" Grid.Column="0" Grid.Row="2" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold" />
+                    <PasswordBox Name="PwdBox" Grid.Column="0" Grid.Row="3"  Style="{DynamicResource GroupBoxPwdBox}" Margin="0,5"/>
+                    <TextBlock Text="Session Date" Grid.Column="1" Grid.Row="2" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Path=SessionDate}" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5"/>
+                </Grid>
+            </GroupBox>
+            <StackPanel Grid.Row="3"  >                
+                <GroupBox Header="SELECTED ENVIROMENT" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" >
+                    <GroupBox.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FF99D6A7" Offset="0"/>
+                            <GradientStop Color="#FFE2F5E7" Offset="1"/>
+                            <GradientStop Color="#FF8EBB98" Offset="0.437"/>
+                        </LinearGradientBrush>
+                    </GroupBox.Background>
+                    <TextBlock Text="{Binding Path=SelectedEnviroment}" Margin="15,3,3,3" FontSize="16" />
+                </GroupBox>
+            </StackPanel>            
+            <Button Content="START SESSION" Grid.Row="4" Command="{Binding Path=LoginCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="0,5,0,0" Width="100" Click="Button_Click"/>
+        </Grid>
+    </Border>
+</UserControl>
