@@ -1,0 +1,119 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Infrastructure.HSM
+{
+    public class HSM
+    {
+        
+        HSMTestEnviroment te = new HSMTestEnviroment();
+        HSMProdEnviroment pe = new HSMProdEnviroment();
+        List<HSMStatusInfo> status = new List<HSMStatusInfo>();
+        
+        public bool PasswordCheckSuccessfull { get; set; }
+
+        
+
+        public HSM()
+        {
+            PasswordCheckSuccessfull = false;
+        }
+        public bool IsConnected(string e)
+        {
+            IEnviroment es = null;
+            if (e == "TEST")
+                es = te;
+            else
+                es = pe;
+            return es.IsConnected();
+        }
+        
+        public bool TokenIsAvailable(string e)
+        {
+            IEnviroment es = null;
+            if (e == "TEST")
+                es = te;
+            else
+                es = pe;
+            return es.TokenIsAvailable();
+        }
+        public string Sign(byte[] data,string e,string cert_type)
+        {
+            IEnviroment es = null;
+            if (e == "TEST")
+                es = te;
+            else
+                es = pe;
+            int s = es.GetSlot();
+            string kn=es.SigningKeyName(cert_type);
+            return es.Sign(s, data, kn);
+        }
+        public string ReadPublicKey(string e,string cert_type)
+        {
+            IEnviroment es = null;
+            if (e == "TEST")
+                es = te;
+            else
+                es = pe;
+            
+            int s = es.GetSlot();
+            string pk=es.PublicKey(s, cert_type);
+            return pk; 
+        }
+        public List<HSMStatusInfo> HSMStatus(string e)
+        {
+            status.Clear();
+            Dictionary<string, HSMStatusInfo> es = null;
+            if(e=="TEST")
+                es=te.HSMStatus;
+            else
+                es = pe.HSMStatus;
+            foreach (var element in es)
+            {
+                status.Add(element.Value);
+            }
+            return status;
+        }
+        public bool CheckPassword(string pwd,string enviroment)
+        {
+
+            if (enviroment == "TEST")
+            {
+                PasswordCheckSuccessfull = te.CheckPwd(pwd);
+                return PasswordCheckSuccessfull;
+            }
+            else
+            {
+                PasswordCheckSuccessfull=pe.CheckPwd(pwd);
+                return PasswordCheckSuccessfull;
+            }
+        }
+        public List<KEY_STATUS> KeyStatus(string e)
+        {
+            List<KEY_STATUS> ks = null;
+            if(e=="TEST")
+            {
+                te.DetermineKeyStatus();
+                ks = te.KeyStatus;
+            }
+            else
+            {
+                pe.DetermineKeyStatus();
+                ks = pe.KeyStatus;
+            }            
+            return ks;
+        }
+        
+    }
+
+    public class HSMStatusInfo
+    {
+        public string IPAdr { get; set; }
+        public string Connection { get; set; }
+
+        public int Slot { get; set; }
+    }
+}

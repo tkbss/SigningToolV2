@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="SigningKeyManagment.Views.HSMStatusView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SigningKeyManagment.Views"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Dictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="LBFont" TargetType="{x:Type ListBox}">
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="FontSize" Value="12"/>
+            </Style>
+            <Style x:Key="LabelStyle" TargetType="TextBlock">
+                <Setter Property="Height" Value="20"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="FontFamily" Value="Rockwell Extra Bold"/>
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FF817E7E" Offset="0"/>
+                            <GradientStop Color="#FFF0EDED" Offset="0.983"/>
+                        </LinearGradientBrush>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="DataStyle" TargetType="TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="3,0"/>
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFEEEBEB" Offset="0"/>
+                            <GradientStop Color="#FFF9F8F8" Offset="1"/>
+                            <GradientStop Color="#FFFDFDFD" Offset="0.435"/>
+                        </LinearGradientBrush>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <DataTemplate x:Key="ListBoxKeyTemplate" >
+                <StackPanel Orientation="Horizontal" >
+                    <TextBlock Text="NAME:" Style="{DynamicResource LabelStyle}"/>
+                    <TextBlock Text="{Binding Path=KeyName}" Width="200" Height="20" Style="{DynamicResource DataStyle}"/>
+                    <TextBlock Text="TYPE:" Style="{DynamicResource LabelStyle}"/>
+                    <TextBlock Text="{Binding Path=KeyType}"  Width="50" Height="20" Style="{DynamicResource DataStyle}"/>
+                    <TextBlock Text="STATUS:" Style="{DynamicResource LabelStyle}"/>
+                    <TextBlock Text="{Binding Path=KeyStatus}" Width="100" Height="20" Style="{DynamicResource DataStyle}"/>
+            </StackPanel>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>            
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Grid.Row="0" Header="HSM KEY STATUS" Style="{DynamicResource GroupBoxStyle}" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <GroupBox Grid.Row="0" Header="QA KEYS" >
+                    <ListBox ItemsSource="{Binding Path=QAKeys}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}" />
+                </GroupBox>
+                <GroupBox Grid.Row="1" Header="SIGNING KEYS">
+                    <ListBox ItemsSource="{Binding Path=SigningKeys}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}"/>          
+                </GroupBox>
+                <GroupBox Grid.Row="2" Header="CA KEYS">
+                    <ListBox ItemsSource="{Binding Path=CAKeys}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}"/> 
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1"  Header="KMS CERTIFICATES" Style="{DynamicResource GroupBoxStyle}">
+          <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="133"/>
+                    <ColumnDefinition Width="87"/>
+                    <ColumnDefinition Width="113"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="CA Certificate" Grid.Row="0" Grid.Column="0" Style="{DynamicResource VCenterGroupBoxTextBlock}" Margin="0,3,0,0" />
+                <TextBlock Text="{Binding Path=CertificateStatus.CAKeyStatus}" Grid.Row="0" Grid.Column="1"  Margin="0,3,0,0" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Path=CertificateStatus.CAKeyCreation}" Grid.Row="0" Grid.Column="2" Style="{DynamicResource VCenterGroupBoxTextBlock}" Margin="0,3,0,0"  />
+                <Button Grid.Row="0" Grid.Column="3" Content="SHOW" Margin="3" Command="{Binding Path=CertificateStatus.ShowCACertificateCommand}" IsEnabled="{Binding Path=CertificateStatus.ShowCACertificate}"/>
+                <TextBlock Text="QA Certificate" Grid.Row="1" Grid.Column="0" Style="{DynamicResource VCenterGroupBoxTextBlock}" />
+                <TextBlock Text="{Binding Path=CertificateStatus.QAKeyStatus}" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"  />
+                <TextBlock Text="{Binding Path=CertificateStatus.QAKeyCreation}" Grid.Row="1" Grid.Column="2" Style="{DynamicResource VCenterGroupBoxTextBlock}" Margin="0,0,3.5,0" />
+                <Button Grid.Row="1" Grid.Column="3" Content="SHOW" Margin="3" Command="{Binding Path=CertificateStatus.ShowSigningCertificateQACommand}" IsEnabled="{Binding Path=CertificateStatus.ShowSigningQA}"/>
+                <TextBlock Text="ATM Certificate" Grid.Row="2" Grid.Column="0" Style="{DynamicResource VCenterGroupBoxTextBlock}" Margin="0,0,0,3" />
+                <TextBlock Text="{Binding Path=CertificateStatus.ATMKeyStatus}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,3" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Path=CertificateStatus.ATMKeyCreation}" Grid.Row="2" Grid.Column="2" Style="{DynamicResource VCenterGroupBoxTextBlock}" Margin="0,0,3.5,3" />
+                <Button Grid.Row="2" Grid.Column="3" Content="SHOW" Margin="3" Command="{Binding Path=CertificateStatus.ShowSigningCertificateATMMANUCommand }" IsEnabled="{Binding Path=CertificateStatus.ShowSigningATMMANU}"/>                
+            </Grid>
+            
+            <!--<ListBox ItemsSource="{Binding Path=CertificateStatus}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}"/>-->
+        </GroupBox>
+        <GroupBox Grid.Row="2" Header="HSM IP CONFIGURATION" Style="{DynamicResource GroupBoxStyle}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />                    
+                </Grid.RowDefinitions>
+                <ListBox Grid.Row="0" ItemsSource="{Binding Path=HSMStatus}" Style="{DynamicResource LBFont}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="ADR:" Style="{DynamicResource LabelStyle}"/>
+                                <TextBlock Text="{Binding Path=IPAdr}" Margin="2,0,0,0" Width="100"/>
+                                <TextBlock Text="STATUS:" Margin="5,0,0,0" Style="{DynamicResource LabelStyle}"/>
+                                <TextBlock Text="{Binding Path=Connection}" Margin="2,0,0,0" Width="100"/>
+                                <TextBlock Text="SLOT:" Margin="5,0,0,0" Style="{DynamicResource LabelStyle}"/>
+                                <TextBlock Text="{Binding Path=Slot}" Margin="2,0,0,0" Width="100"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>             
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="3" Header="CERTIFIED MANUFACTURER" Style="{DynamicResource GroupBoxStyle}">
+            <ListBox ItemsSource="{Binding Path=CertifiedManufactures}"/>
+        </GroupBox>
+
+    </Grid>
+</UserControl>

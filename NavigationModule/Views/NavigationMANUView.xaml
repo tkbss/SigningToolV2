@@ -1,0 +1,67 @@
+﻿<UserControl
+             x:Class="NavigationModule.Views.NavigationMANUView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"             
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
+    <UserControl.Resources>
+        <ResourceDictionary>
+        <HierarchicalDataTemplate x:Key="ManuPackageTree" ItemsSource="{Binding Path=PackageNameList}" >
+            <TextBlock Name="Vers" Text="{Binding Path=Version}" FontFamily="Arial" FontSize="14" FontWeight="Bold"/>            
+            <HierarchicalDataTemplate.ItemTemplate >               
+                <DataTemplate >
+                    <TextBlock Name ="PN" Text="{Binding Path=PackageName}" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                </DataTemplate>
+              </HierarchicalDataTemplate.ItemTemplate>
+         </HierarchicalDataTemplate>        
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../NavigationResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border BorderThickness="4" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Margin="5">        
+        <StackPanel  >
+            <Border Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" >
+                <TextBlock Style="{DynamicResource NavigationTitle}"/>
+            </Border>
+            <Grid Style="{DynamicResource NavigationGridStyle}" Margin="5" >
+            <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="300"/>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+            </Grid.RowDefinitions>        
+                <Button Grid.Row="0" Content="CHANGE SESSION" Command="{Binding Path=ChangeSessionCommand}" Margin="10" />
+                <Button Grid.Row="1" Content="KEY GENERATION" Command="{Binding Path=KeyGenerationCommand}" Margin="10"/>
+                <Button Grid.Row="2" Content="IMPORT PACAKGE" Command ="{Binding ImportPackageCommand}" Margin="10"/>
+                <GroupBox Grid.Row="3" Header="SOFTWARE SIGNING" Margin="10" FontFamily="Arial" FontSize="18" FontWeight="Bold" >
+                    <GroupBox Header="{Binding Path=ManuPackages}" Margin="5">
+                        <Grid>
+                        <TreeView Name="treeView1" ItemTemplate="{DynamicResource ManuPackageTree}" ItemsSource="{Binding Path=ManufacturerPackageManagement.SingleManuPackages}" Margin="4" BorderBrush="{x:Null}" >
+                                <TreeView.Effect>
+                                    <DropShadowEffect/>
+                                </TreeView.Effect>
+                                <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectedItemChanged">
+                                    <i:InvokeCommandAction Command="{Binding Path=ManufacturerPackageManagement.SelectedItemChangedCommand}" CommandParameter="{Binding ElementName=treeView1, Path=SelectedItem}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                            <TreeView.ItemContainerStyle>
+                                <Style TargetType="{x:Type TreeViewItem}">
+                                    <Setter Property="IsExpanded" Value="True" />
+                                    <Setter Property="IsSelected" Value="{Binding Path=IsSelected, Mode=TwoWay}"/>
+                                </Style>
+                            </TreeView.ItemContainerStyle>
+                        </TreeView>
+                        </Grid>
+                    </GroupBox>
+                </GroupBox>
+                <Button Grid.Row="4" Content="OPERATION TRACE" Command="{Binding ShowTraceCommand}" Margin="10"/>
+                <Canvas Grid.Row="5" />
+            </Grid>
+        </StackPanel>
+        
+    </Border>
+</UserControl>

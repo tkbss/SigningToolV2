@@ -1,0 +1,143 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
+    <DataTemplate x:Key="SignerInfoTemplate">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="First Name" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+            <TextBlock Grid.Row="0" Grid.Column="1"  Text="{Binding Path=FirstName, Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Last Name" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+            <TextBlock Grid.Row="1" Grid.Column="1"  Text="{Binding Path=LastName, Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Session Date" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=SessionDate}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Signing Origin" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=Origin}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="SecuritySetupInfo">
+        <Grid >
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="FILENAME" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="XML MD" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="COMPUTED MD" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="ALGORITHM" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=FileName}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Digest}" Background="{Binding Path=MDStatus}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=ComputedDigest}" Background="{Binding Path=MDStatus}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=Algorithm}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+
+
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="PackageInfo">
+        <ListView >
+            <ListViewItem Background="{DynamicResource ListViewItemGreyBackground}"  >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Vendor" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Path=PI.Vendor,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                </StackPanel>
+            </ListViewItem>
+            <ListViewItem >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Version" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Path=PI.Version,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                </StackPanel>
+            </ListViewItem>
+            <ListViewItem Background="{DynamicResource ListViewItemGreyBackground}" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Package Name" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Path=PI.Name,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                </StackPanel>
+            </ListViewItem>
+            <ListViewItem >
+                <StackPanel Orientation="Horizontal" >
+                    <TextBlock Text="Date" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Path=PI.PackageDate,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                </StackPanel>
+            </ListViewItem>
+            <ListViewItem Background="{DynamicResource ListViewItemGreyBackground}" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Extraction Path" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Path=PI.ExtractionPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                </StackPanel>
+            </ListViewItem>
+            <ListViewItem >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Files to sign" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Path=PI.NuOfExecutables,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                </StackPanel>
+            </ListViewItem>
+        </ListView>
+    </DataTemplate>
+    <DataTemplate x:Key="PackageSigningStatus">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="PACKAGE SIGNED" Style="{DynamicResource GroupBoxTextBlock}" FontWeight="Bold"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=ExportSignatureExists}" Style="{DynamicResource GroupBoxTextBlock}" FontWeight="Normal"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="SIGNATUR STATUS" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
+            <Ellipse Grid.Row="1" Grid.Column="1" Fill="{Binding Path=SigningStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="5,0,0,0"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="SIG KEY OWNER" Style="{DynamicResource GroupBoxTextBlock}" FontWeight="Bold"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=SignerCertificateOwner}" FontWeight="Normal"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="SIGNER CERT" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
+            <Button Grid.Row="3" Grid.Column="1" Content="SHOW" Height="20" FontSize="10" Command="{Binding Path=ShowSignerCertificateCommand}"/>
+        </Grid>
+    </DataTemplate>
+    <HierarchicalDataTemplate x:Key="ConfigProviderTree" ItemsSource="{Binding Path=Enviroments}">
+        <TextBlock Name="ProviderName" Text="{Binding Path=NameIdentifier}" >
+            <TextBlock.ContextMenu>
+                <ContextMenu >
+                    <MenuItem Header="Delete" Command="{Binding DeleteProviderCommand}"/>
+                    <MenuItem Header="Change" Command="{Binding ChangeProviderCommand}"/>
+                </ContextMenu>
+            </TextBlock.ContextMenu>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDown" SourceObject="{Binding ElementName=ProviderName}">
+                    <i:CallMethodAction MethodName="LostFocusOnProvider" TargetObject="{Binding Path=DataContext, ElementName=ProviderName}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBlock>
+        <HierarchicalDataTemplate.ItemTemplate>
+            <DataTemplate>
+                <TextBlock Name ="PPSerialNumber" Text="{Binding Path=SNR, Mode=TwoWay}" >                    
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDown" SourceObject="{Binding ElementName=PPSerialNumber}">
+                    <i:CallMethodAction MethodName="MethodToCallOnMouseEnterEvent" TargetObject="{Binding Path=DataContext, ElementName=PPSerialNumber}"/>
+                </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                </TextBlock>
+            </DataTemplate>
+        </HierarchicalDataTemplate.ItemTemplate>
+    </HierarchicalDataTemplate>
+
+</ResourceDictionary>

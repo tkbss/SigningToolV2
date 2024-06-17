@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="SigningKeyManagment.Views.MANUKeyGenerationToolbarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SigningKeyManagment.Views"
+            >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Dictionary.xaml"/>                
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Border Style="{DynamicResource BorderBackground}">        
+        <StackPanel >
+            <TextBlock Text="{Binding KeyGenTitle}" Style="{DynamicResource Title}"/>
+            <Border Style="{DynamicResource ToolbarBoder}" >
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <Button Content="CREATE KEYS"  Command="{Binding Path=CreateManuKeysCommand}" IsEnabled="{Binding ManuKeyGenEnabled}"/>
+                    <Separator Style="{DynamicResource SeperatorStyle}" />
+                    <Button Content="EXPORT PKCS10"  Command="{Binding Path=CreatePKCS10RequestCommand}"/>
+                    <Separator Style="{DynamicResource SeperatorStyle}"/>
+                    <Button Width="130" Content="IMPORT CERTIFICATE" Command="{Binding Path=ImportManufacturerCertificateCommand}"/>
+                    <Separator Style="{DynamicResource SeperatorStyle}"/>
+                    <Button Width="130" Content="CHANGE STORE PWD" Command="{Binding Path=ChangeManuStorePwdCommand}"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </Border>
+</UserControl>

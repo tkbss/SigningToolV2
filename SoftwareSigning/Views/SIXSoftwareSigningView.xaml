@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="SoftwareSigning.SIXSoftwareSigningView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="False">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Dictionary.xaml"/>
+                <ResourceDictionary Source="../DataTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>    
+        </ResourceDictionary>
+        
+    </UserControl.Resources>
+    <Border BorderThickness="4" Margin="2,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">      
+        <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="145"/>
+            <RowDefinition Height="125"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+            <Border Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="0" Grid.ColumnSpan="2">
+                <TextBlock  Text="{Binding Path=PackageProviderTitle}" Style="{DynamicResource PackageProviderTitle}" />
+            </Border>
+            <GroupBox Style="{DynamicResource SoftwareSigningGroupBoxStyle}" Grid.Row="1" Grid.Column="0" Header="SIGNER INFO" 
+                      ContentTemplate="{DynamicResource SignerInfoTemplate}" Content="{Binding}" Margin="5,2"  />
+        <GroupBox Grid.Row="1" Header="KEYS STATUS" Grid.Column="1" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" Margin="5,2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="STORE TYPE" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding Path=StoreType}" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="CA KEYS" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <Ellipse Grid.Row="1" Grid.Column="1" Fill="{Binding Path=KeyStatus.CAKeyStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="2,0,0,0" VerticalAlignment="Top" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="QA KEYS" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <Ellipse Grid.Row="2" Grid.Column="1" Fill="{Binding Path=KeyStatus.QAKeyStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="2,0,0,0" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="ATM KEYS" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <Ellipse Grid.Row="3" Grid.Column="1" Fill="{Binding Path=KeyStatus.ATMKeyStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="2,0,0,0" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="CA CERT" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="QA CERT" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="3" Grid.Column="2" Text="ATM CERT" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+                    <Ellipse Grid.Row="1" Grid.Column="3" Fill="{Binding Path=KeyStatus.CACertStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="2,0,0,0" VerticalAlignment="Top" />
+                    <Ellipse Grid.Row="2" Grid.Column="3" Fill="{Binding Path=KeyStatus.QACertStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="2,0,0,0" VerticalAlignment="Top" />
+                    <Ellipse Grid.Row="3" Grid.Column="3" Fill="{Binding Path=KeyStatus.ATMCertStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="2,0,0,0" VerticalAlignment="Top" />
+                </Grid>
+        </GroupBox>
+        <GroupBox Header="PACKAGE INFO" Grid.Row="2"  Grid.ColumnSpan="2" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" ContentTemplate="{DynamicResource PackageInfo}" Content="{Binding}"  Margin="5,2"/>
+        <GroupBox Grid.Row="3" Grid.ColumnSpan="2" Header="PACKAGE SECURITY INFO" Style="{DynamicResource SoftwareSigningGroupBoxStyle}"  Margin="5,2">
+                <ListBox  ItemTemplate="{DynamicResource SecuritySetupInfo}" ItemsSource="{Binding Path=SecurityInfo}" />
+        </GroupBox>
+        <GroupBox Header="VERIFICATION INFO" Grid.Row="4" Grid.Column="0" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" Margin="5,2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="SIGNATUR STATUS" VerticalAlignment="Center" FontFamily="Arial" FontSize="12" HorizontalAlignment="Left" FontWeight="Bold"/>
+                <Ellipse Grid.Row="0" Grid.Column="1" Fill="{Binding Path=SignatureStatus}"  HorizontalAlignment="Left" Width="15" Height="15" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="CERTIFICATE CHECK" VerticalAlignment="Center" FontFamily="Arial" FontSize="12" HorizontalAlignment="Left" FontWeight="Bold"/>
+                <Ellipse Grid.Row="1" Grid.Column="1" Fill="{Binding Path=CertifcateValidityStatus}"  HorizontalAlignment="Left" Width="15" Height="15" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="CERT OWNER" FontFamily="Arial" FontSize="12" HorizontalAlignment="Left" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=VerificationCertificateOwner}" FontFamily="Arial" FontSize="12" HorizontalAlignment="Left" FontWeight="Normal"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="SIGNER CERTIFICATE" VerticalAlignment="Center" FontFamily="Arial" FontSize="12" HorizontalAlignment="Left" FontWeight="Bold"/>
+                    <Button Grid.Row="3" Grid.Column="1" Content="SHOW" Command="{Binding Path=ShowSenderCertificateCommand}" Height="20" FontSize="10" Width="100" HorizontalAlignment="Left" FontWeight="Normal"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="PACKAGE SIGNING STATUS" Grid.Row="4" Grid.Column="1" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" ContentTemplate="{DynamicResource PackageSigningStatus}" Content="{Binding}" Margin="5,2" Visibility="{Binding Path=PSSVisibility}"/>
+
+
+        </Grid>
+    </Border>
+</UserControl>

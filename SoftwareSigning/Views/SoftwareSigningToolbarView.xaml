@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="SoftwareSigning.SoftwareSigningToolbarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SoftwareSigning"
+             mc:Ignorable="d" 
+             >
+    
+   <Border CornerRadius="30" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" BorderThickness="2" Margin="7">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="15" BlurRadius="7"/>
+        </Border.Effect>
+        <Border.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FFD8DEE4" Offset="0"/>
+                <GradientStop Color="#FFCBD1D6" Offset="1"/>
+                <GradientStop Color="#FFE6EAEE" Offset="0.384"/>
+            </LinearGradientBrush>
+        </Border.Background>
+        <StackPanel Width="480">
+            <Border BorderBrush="#FF1D1A1A" BorderThickness="0"   Margin="5" CornerRadius="10">         
+            <TextBlock Text="{Binding ToolbarTitle}" Margin="2,10,0,2" HorizontalAlignment="Center" FontFamily="Rockwell Extra Bold" FontSize="19" VerticalAlignment="Center"/>
+        </Border>
+            <Border Margin="10,10,0,5"  HorizontalAlignment="Left" Height="40">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="8"/>
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Button Content="EXPORT PACKAGE" Command="{Binding ExportPackageCommand}" Width="130" IsEnabled="{Binding Path=ExportEnabled}"/>
+                <Separator Width="2" Margin="5,2" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                <Button Content="SIGNING" Width="130" Command="{Binding SignPackageCommand}" IsEnabled="{Binding Path=SigningEnabled}"/>
+                <Separator Width="2" Margin="5,2" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
+                <Button Width="130" Content="REMOVE PACKAGE" Command="{Binding RemovePackageCommand}"/>
+            </StackPanel>
+            </Border>        
+        </StackPanel>
+    </Border>
+</UserControl>

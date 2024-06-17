@@ -26,7 +26,7 @@ namespace SigningTool
             containerRegistry.RegisterSingleton<LoginStatusBarViewModel>();
 
 
-            containerRegistry.Register<LoginView>();
+            containerRegistry.RegisterSingleton<LoginView>();
             containerRegistry.Register<LoginToolbarView>();
             containerRegistry.Register<LoginStatusBarView>();
             containerRegistry.Register<NavigationSIXManagedView>();
