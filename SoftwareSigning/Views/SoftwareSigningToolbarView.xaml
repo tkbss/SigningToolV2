@@ -6,8 +6,10 @@
              xmlns:local="clr-namespace:SoftwareSigning"
              mc:Ignorable="d" 
              >
-    
-   <Border CornerRadius="30" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" BorderThickness="2" Margin="7">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    <Border CornerRadius="30" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" BorderThickness="2" Margin="7">
         <Border.Effect>
             <DropShadowEffect ShadowDepth="15" BlurRadius="7"/>
         </Border.Effect>
@@ -33,7 +35,9 @@
                 <Separator Width="2" Margin="5,2" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"/>
                 <Button Width="130" Content="REMOVE PACKAGE" Command="{Binding RemovePackageCommand}"/>
             </StackPanel>
-            </Border>        
+            </Border>
+            <ProgressBar Height="20" Margin="10" IsIndeterminate="True" Visibility="{Binding IsOperationInProgress, 
+                Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </StackPanel>
     </Border>
 </UserControl>

@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 
-5867467237
+8682859804
 
-14163934021
-2151535567724
-NavigationResources.xaml;Views\NavigationEmptyView.xaml;Views\NavigationMANUView.xaml;Views\NavigationSIXManagedView.xaml;Views\NavigationSIXQAView.xaml;
+141755262451
+216-1773232840
+NavigationResources.xaml;Views\NavigationATMView.xaml;Views\NavigationEmptyView.xaml;Views\NavigationHSMKMView.xaml;Views\NavigationMANUView.xaml;Views\NavigationQAView.xaml;Views\NavigationSIXManagedView.xaml;Views\NavigationSIXQAView.xaml;
 
 True
 

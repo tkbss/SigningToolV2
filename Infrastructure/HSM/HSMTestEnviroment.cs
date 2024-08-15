@@ -21,8 +21,7 @@ namespace Infrastructure.HSM
         public HSMTestEnviroment()
         {
             SetIPEnviroment();
-            IpStatus(cfa.CK_QA_IP_ADR, default_atm_test_ip);
-            SetUpSlots();
+            IpStatus(cfa.CK_QA_IP_ADR, default_atm_test_ip);            
         }
         public void DetermineKeyStatus()
         {

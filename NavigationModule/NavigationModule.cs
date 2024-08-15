@@ -1,4 +1,5 @@
-﻿using NavigationModule.ViewModels;
+﻿using NavigationModule.Models;
+using NavigationModule.ViewModels;
 using NavigationModule.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -19,17 +20,24 @@ namespace NavigationModule
             regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationSIXQAView));
             regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationMANUView));
             regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationSIXManagedView));
+            regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationQAView));
+            regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationATMView));
+            regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationHSMKMView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterSingleton<NavigationViewModel>();
-            
+            containerRegistry.RegisterSingleton<PackageManagementModel>();
+
 
             containerRegistry.Register<NavigationSIXQAView>();
+            containerRegistry.Register<NavigationQAView>();
+            containerRegistry.Register<NavigationATMView>();
             containerRegistry.Register<NavigationEmptyView>();
             containerRegistry.Register<NavigationMANUView>();
             containerRegistry.Register<NavigationSIXManagedView>();
+            containerRegistry.Register<NavigationHSMKMView>();
         }
         
 

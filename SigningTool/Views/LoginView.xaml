@@ -17,8 +17,32 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="ENVIROMENT" Margin="5"  Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+            <GroupBox Grid.Row="0" Header="HSM CONNECTION" Margin="5"  Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <GroupBox  Grid.Row="0" Header="CONFIGURED IP ADDRESS" Margin="3,2" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" FontSize="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding Path=HSMIP}" Margin="5" FontSize="14" />
+                            <Button Content="MODIFY" Grid.Column="1" Command="{Binding Path=ConnectCommand}" Margin="5" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="1" Header="HSM CONNECTION STATUS"   Margin="5" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+                        <Grid>
+                            <TextBox Text="{Binding Path=HSMIP}" Margin="5" FontSize="14" />
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="ENVIROMENT" Margin="5"  Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -99,7 +123,7 @@
                     </GroupBox>
                 </Grid> 
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="ATM-DEVICE" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+            <GroupBox Grid.Row="2" Header="ATM-DEVICE" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
                 <ComboBox  SelectedIndex="{Binding Path=SIATM_DEVICE}" Width="200" Margin="0,2" FontSize="14">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">
@@ -117,7 +141,7 @@
                     </ComboBoxItem>
                 </ComboBox>
             </GroupBox>
-            <GroupBox Grid.Row="2" Header="SESSION DATA" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+            <GroupBox Grid.Row="3" Header="SESSION DATA" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -140,7 +164,7 @@
                     <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Path=SessionDate}" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5"/>
                 </Grid>
             </GroupBox>
-            <StackPanel Grid.Row="3"  >                
+            <StackPanel Grid.Row="4"  >                
                 <GroupBox Header="SELECTED ENVIROMENT" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" >
                     <GroupBox.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

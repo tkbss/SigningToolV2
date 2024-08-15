@@ -37,12 +37,33 @@ namespace SoftwareSigning.Model
             if (s==SIGNER.MANU)
             {
                 //SIGNER=MANU => PACKAGE contains no signature. Everything OK. Nothing to verify
-                vm.PackageVerification = true;                
+                vm.PackageVerification = true;
+                if(vm.PI!=null && vm.PI.Security!=null && vm.PI.Security.Count>0)
+                {
+                    vm.ExportSignatureExists = "TRUE";
+                    vm.SecurityInfo.Clear();
+                    foreach (SecurityInfo si in vm.PI.Security)
+                    {
+                        PackageSecurityInfoModel sim = new PackageSecurityInfoModel();
+                        sim.Algorithm = si.Algorithm;
+                        sim.Digest = si.Digest;
+                        sim.ComputedDigest = si.Digest;
+                        sim.FileName = si.FileName;
+                        sim.ComputedDigest = si.ComputedDigest;
+                        if (sim.Digest == sim.ComputedDigest)
+                            sim.MDStatus = new SolidColorBrush(Colors.Green);
+                        else
+                            sim.MDStatus = new SolidColorBrush(Colors.Red);
+                        vm.SecurityInfo.Add(sim);
+                    }
+                   
+
+                }
                 sbvm.Success("PACKAGE LOAD", "SELECTED VERSION SUCCESSFULL LOADED.");                
                 return;
             }
-            //vm.SecurityInfo.Clear();
-            if (vm.PI.Security==null || vm.PI.Security.Count() == 0)
+            
+            if (vm.PI==null || vm.PI.Security==null || vm.PI.Security.Count() == 0)
             {
                 //NO SIGNING INFO AVAILABLE 
                 ErrorMessage = "Package contains no signature. Package signing not allowed";
@@ -51,7 +72,8 @@ namespace SoftwareSigning.Model
                 vm.PackageVerification = false;
                 return;                
             }
-            bool md_validation = true;            
+            bool md_validation = true;    
+            vm.SecurityInfo.Clear();
             foreach (SecurityInfo si in vm.PI.Security)
             {
                 PackageSecurityInfoModel sim = new PackageSecurityInfoModel();
@@ -68,19 +90,27 @@ namespace SoftwareSigning.Model
                     md_validation = false;                    
                 }
                 vm.SecurityInfo.Add(sim);
-            }            
+            }
             SIGNER v = SIGNER.MANU;
             try
-            {
+            {                
+                StorePasswordSafe pwds = _container.Resolve<StorePasswordSafe>();
                 string pwd = "1234";
-                vm.VerificationCertificate = sec.VerifyPackageSignature(vm.StoreType, vm.PI.GetPackageInfo(), vm.Enviroment,pwd);
+                vm.VerificationCertificate = sec.VerifyPackageSignature(vm.StoreType, vm.PI.GetPackageInfo(), vm.Enviroment, pwd);
                 vm.SignatureStatus = new SolidColorBrush(Colors.Green);
-                vm.CertifcateValidityStatus = new SolidColorBrush(Colors.Green);                
-                vm.VerificationCertificateOwner = cert_owner.ResolveSigner(vm.VerificationCertificate, Converter.Env(vm.Enviroment), Converter.ST(vm.StoreType),out v);
+                vm.CertifcateValidityStatus = new SolidColorBrush(Colors.Green);
+                vm.VerificationCertificateOwner = cert_owner.ResolveSigner(vm.VerificationCertificate, Converter.Env(vm.Enviroment), Converter.ST(vm.StoreType), out v);
                 if (string.IsNullOrEmpty(vm.VerificationCertificateOwner) == true)
-                    vm.VerificationCertificateOwner = "UNKNOWN";             
+                {
+                    vm.VerificationCertificateOwner = "UNKNOWN";
+                    vm.ErrorMessage = "Package signed by unkown Package provider.";
+                    sbvm.Error("PACKAGE VERIFICATION", vm.ErrorMessage);
+                    vm.PackageVerification = false;
+                    toolbar.SigningEnabled = false;
+                    return;
+                }
             }
-            catch (SignatureVerificationException )
+            catch (SignatureVerificationException)
             {
                 //wirte error to status bar
                 ErrorMessage = "Signature validation failed. Package signing is not possible.";
@@ -93,7 +123,7 @@ namespace SoftwareSigning.Model
                 toolbar.SigningEnabled = false;
                 return;
             }
-            catch (CertificateValidationException )
+            catch (CertificateValidationException)
             {
                 ErrorMessage = "Signature key validation failed. Package signing is not possible.";
                 Log(LogData.OPERATION.VERIFICATION, LogData.RESULT.P_VERIFY_ERROR, vm);
@@ -127,13 +157,7 @@ namespace SoftwareSigning.Model
         private void CheckVerifcationCertOwner(SIGNER s, SIXSoftwareSigningViewModel vm, SIXSoftwareSigningStatusBarViewModel sbvm, SoftwareSigningToolbarViewModel toolbar,SIGNER v)
         {
             if (s == SIGNER.MANU)
-                return;
-            if (vm.VerificationCertificateOwner == "UNKNOWN")
-            {
-                vm.ErrorMessage = "Signature verifcation ok but certificate owner unknown. Package signed by wrong instance.";
-                sbvm.Error("PACKAGE VERIFICATION",vm.ErrorMessage);
-                return;
-            }
+                return;            
             if (s==SIGNER.QA)
             {
                 
@@ -241,6 +265,26 @@ namespace SoftwareSigning.Model
                 vm.SignatureStatus = new SolidColorBrush(Colors.Green);
                 vm.CertifcateValidityStatus = new SolidColorBrush(Colors.Green);
                 toolbar.SigningEnabled = true;
+            }
+            if (vm.PI != null && vm.PI.Security != null && vm.PI.Security.Count > 0)
+            {
+                vm.SecurityInfo.Clear();
+                foreach (SecurityInfo si in vm.PI.Security)
+                {                   
+                    PackageSecurityInfoModel sim = new PackageSecurityInfoModel();
+                    sim.Algorithm = si.Algorithm;
+                    sim.Digest = si.Digest;
+                    sim.ComputedDigest = si.Digest;
+                    sim.FileName = si.FileName;
+                    sim.ComputedDigest = si.ComputedDigest;
+                    if (sim.Digest == sim.ComputedDigest)
+                        sim.MDStatus = new SolidColorBrush(Colors.Green);
+                    else
+                        sim.MDStatus = new SolidColorBrush(Colors.Red);
+                    vm.SecurityInfo.Add(sim);
+                }
+
+
             }
             PackageInfo pi = vm.PI.GetPackageInfo();
             vm.ExportSignatureExists = sec.ExportSignatureExists(Converter.ST(vm.StoreType), Converter.Env(vm.Enviroment),Converter.CertType(vm.SignerType), pi).ToString();           

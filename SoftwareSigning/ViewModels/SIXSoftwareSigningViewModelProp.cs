@@ -7,8 +7,22 @@ using System.Windows.Media;
 namespace SoftwareSigning.ViewModels
 {
     public partial class SIXSoftwareSigningViewModel: BindableBase, INavigationAware
-    {       
-
+    {
+        SoftwareSigningToolbarViewModel _tvbm;
+        public SoftwareSigningToolbarViewModel ToolbarViewModel 
+        {
+            get { return _tvbm; }
+            set { SetProperty(ref _tvbm, value); }
+        }
+        PackageDropModel _pd;
+        public PackageDropModel PackageDrop
+        {
+            get { return _pd; }
+            set
+            {
+                SetProperty(ref _pd, value);
+            }
+        }
         Visibility pss_vis;
         public Visibility PSSVisibility
         {

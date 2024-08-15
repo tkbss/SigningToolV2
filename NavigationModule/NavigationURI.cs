@@ -2,17 +2,18 @@
 {
     public class NavigationURI
     {
-        
-        public static Uri LoginViewUri = new Uri("LoginView", UriKind.Relative);
+
+        public static Uri SIXsigningViewUri = new Uri("SIXSoftwareSigningView", UriKind.Relative);
+        public static Uri LoginViewUri = new Uri("LoginView", UriKind.Relative);        
         public static Uri LoginToolbarViewUri = new Uri("LoginToolbarView", UriKind.Relative);
         public static Uri LoginStatusBarViewUri = new Uri("LoginStatusBarView", UriKind.Relative);
         public static Uri ManuSoftwareSigningViewUri = new Uri("ManuSoftwareSigningView", UriKind.Relative);
-        public static Uri NavigationSIXManagedViewUri = new Uri("NavigationSIXManagedView", UriKind.Relative);
+        public static Uri NavigationSIXManagedViewUri = new Uri("NavigationATMView", UriKind.Relative);//new Uri("NavigationSIXManagedView", UriKind.Relative);
         public static Uri NavigationMANUViewUri = new Uri("NavigationMANUView", UriKind.Relative);
-        public static Uri NavigationSIXQAViewUri = new Uri("NavigationSIXQAView", UriKind.Relative);
+        public static Uri NavigationSIXQAViewUri = new Uri("NavigationQAView", UriKind.Relative);//new Uri("NavigationSIXQAView", UriKind.Relative);
         public static Uri NavigationEmptyViewUri = new Uri("NavigationEmptyView", UriKind.Relative);
         public static Uri SIXSoftwareSigningStatusBarView = new Uri("SIXSoftwareSigningStatusBarView", UriKind.Relative);
-        public static Uri SIXsigningViewUri = new Uri("SIXSoftwareSigningView", UriKind.Relative);
+        
         public static Uri keySetupViewUri = new Uri("KeyManagementView", UriKind.Relative);
         public static Uri signingToolbarViewUri = new Uri("SoftwareSigningToolbarView", UriKind.Relative);
         public static Uri signingToolbarATMDeviceViewUri = new Uri("ATMDeviceSoftwareSigningToolbarView", UriKind.Relative);

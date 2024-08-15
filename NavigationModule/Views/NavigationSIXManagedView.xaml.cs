@@ -18,5 +18,16 @@ namespace NavigationModule.Views
 
 
         }
+        object _selectedItem;
+        public object SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                _selectedItem = value;
+                // Add any additional logic here
+                
+            }
+        }
     }
 }

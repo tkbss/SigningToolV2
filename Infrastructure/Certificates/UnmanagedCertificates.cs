@@ -88,7 +88,15 @@ namespace Infrastructure
 
             string cfp= keystore.StorePath(signer, env, st);
             string sn= keystore.StoreName(signer, env, st, t);
-            status.FilePath = Path.Combine(cfp, sn + ".p12");
+            if (st == STORETYPE.KMS)
+            {
+                status.FilePath = Path.Combine(cfp, sn + ".cer");
+            }
+            else
+            {
+                status.FilePath = Path.Combine(cfp, sn + ".p12");
+            }
+            
             if (File.Exists(status.FilePath) == true)
             {
                 status.Creation = File.GetLastWriteTime(status.FilePath).ToString();

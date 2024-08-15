@@ -13,62 +13,69 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="4" Margin="5">        
-        <StackPanel>
-            <Border Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-                <TextBlock Text="{Binding Path=PackageProviderTitle}" Style="{DynamicResource PackageProviderTitle}" />
-            </Border>
-            <Grid Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="145" />
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
+    <Border BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="4" Margin="5">
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="120" />
+                <RowDefinition Height="170"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="130"/>
+
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Style="{DynamicResource SoftwareSigningGroupBoxStyle}" Grid.Row="0" Grid.Column="0" Header="SIGNER INFO" ContentTemplate="{DynamicResource SignerInfoTemplate}" Content="{Binding}"/>
-                <GroupBox Grid.Row="0" Header="KEYS STATUS" Grid.Column="1" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="SIGNING KEY" Grid.Row="0" Grid.Column="0" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
-                        <TextBlock Text="PKCS10 REQUEST" Grid.Row="1" Grid.Column="0" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
-                        <TextBlock Text="CERTIFICATE" Grid.Row="2" Grid.Column="0" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
-                        <Ellipse Grid.Row="0" Grid.Column="1" Fill="{Binding Path=KeyStatus.ManuSigningKeyStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="5,0,0,0"/>
-                        <Ellipse Grid.Row="1" Grid.Column="1" Fill="{Binding Path=KeyStatus.ManuCertReqStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="5,0,0,0"/>
-                        <Ellipse Grid.Row="2" Grid.Column="1" Fill="{Binding Path=KeyStatus.ManuSigningCertStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="5,0,0,0"/>
-                    </Grid>
-                </GroupBox>
-                <GroupBox Header="PACKAGE INFO" Grid.Row="1"  Grid.ColumnSpan="2" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" ContentTemplate="{DynamicResource PackageInfo}" Content="{Binding}"/>
-                <GroupBox Header="PACKAGE SIGNING STATUS" Grid.Row="2" Grid.Column="0" Style="{DynamicResource SoftwareSigningGroupBoxStyle}"  ContentTemplate="{DynamicResource PackageSigningStatus}" Content="{Binding}"/>
-                <GroupBox Header="DEVELOPMENT ONLY" Grid.Row="2" Grid.Column="1" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" Visibility="{Binding Path=ATMSigning}" >
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition  Width="160"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="ATM SIGNATUR STATUS" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
-                        <Ellipse Grid.Row="0" Grid.Column="1" Fill="{Binding Path=ATMSigningStatus}"  HorizontalAlignment="Left" Width="20" Height="20" Margin="5,0,0,0"/>
-                        <Button Grid.Row="1" Grid.ColumnSpan="2"  Content="SIGN FOR ATM" Height="20" Margin="5" Command="{Binding Path=SignForATMCommand}"/>
-                        <Button Grid.Row="2" Grid.ColumnSpan="2"  Content="EXPORT ATM PACKAGE" Height="20" Margin="5" Command="{Binding Path=ExportATMPackageCommand}" IsEnabled="{Binding Path=ATMExportEnabled}"/>
-                    </Grid>
-                </GroupBox>
-            </Grid>
-        </StackPanel>
+            <Border Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}" BorderThickness="4" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Grid.Row="0" Grid.ColumnSpan="2">
+                <TextBlock Text="{Binding Path=PackageProviderTitle}" Style="{DynamicResource PackageProviderTitle}" />
+            </Border>
+            <GroupBox Style="{DynamicResource SoftwareSigningGroupBoxStyle}" Grid.Row="1" Grid.Column="0" Header="SIGNER INFO" ContentTemplate="{DynamicResource SignerInfoTemplate}" Content="{Binding}"/>
+            <GroupBox Grid.Row="1" Header="KEYS STATUS" Grid.Column="1" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="SIGNING KEY" Grid.Row="0" Grid.Column="0" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <TextBlock Text="PKCS10 REQUEST" Grid.Row="1" Grid.Column="0" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <TextBlock Text="CERTIFICATE" Grid.Row="2" Grid.Column="0" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <Ellipse Grid.Row="0" Grid.Column="1" Fill="{Binding Path=KeyStatus.ManuSigningKeyStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="5,0,0,0"/>
+                    <Ellipse Grid.Row="1" Grid.Column="1" Fill="{Binding Path=KeyStatus.ManuCertReqStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="5,0,0,0"/>
+                    <Ellipse Grid.Row="2" Grid.Column="1" Fill="{Binding Path=KeyStatus.ManuSigningCertStatus}"  HorizontalAlignment="Left" Width="15" Height="15" Margin="5,0,0,0"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="PACKAGE INFO" Grid.Row="2"  Grid.ColumnSpan="2" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" 
+                      ContentTemplate="{DynamicResource PackageInfo}" Content="{Binding}"/>
+            <GroupBox Grid.Row="3" Grid.ColumnSpan="2" Header="PACKAGE SECURITY INFO" Style="{DynamicResource SoftwareSigningGroupBoxStyle}"  Margin="5,2">
+                <ListBox  ItemTemplate="{DynamicResource SecuritySetupInfo}" ItemsSource="{Binding Path=SecurityInfo}" />
+            </GroupBox>
+            <GroupBox Header="PACKAGE SIGNING STATUS" Grid.Row="4" Grid.Column="0" Style="{DynamicResource SoftwareSigningGroupBoxStyle}"  
+                      ContentTemplate="{DynamicResource PackageSigningStatus}" Content="{Binding}"/>
+            <GroupBox Header="DEVELOPMENT ONLY" Grid.Row="4" Grid.Column="1" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" 
+                      Visibility="{Binding Path=ATMSigning}" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition  Width="160"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="ATM SIGNATUR STATUS" Style="{DynamicResource GroupBoxTextBlock}" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <Ellipse Grid.Row="0" Grid.Column="1" Fill="{Binding Path=ATMSigningStatus}"  HorizontalAlignment="Left" Width="20" Height="20" Margin="5,0,0,0"/>
+                    <Button Grid.Row="1" Grid.ColumnSpan="2"  Content="SIGN FOR ATM" Height="20" Margin="5" Command="{Binding Path=SignForATMCommand}"/>
+                    <Button Grid.Row="2" Grid.ColumnSpan="2"  Content="EXPORT ATM PACKAGE" Height="20" Margin="5" Command="{Binding Path=ExportATMPackageCommand}" IsEnabled="{Binding Path=ATMExportEnabled}"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        
     </Border>
 </UserControl>

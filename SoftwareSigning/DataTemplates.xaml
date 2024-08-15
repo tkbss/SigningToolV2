@@ -13,20 +13,21 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="First Name" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-            <TextBlock Grid.Row="0" Grid.Column="1"  Text="{Binding Path=FirstName, Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Last Name" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-            <TextBlock Grid.Row="1" Grid.Column="1"  Text="{Binding Path=LastName, Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="First Name" FontFamily="Arial"  FontWeight="Bold"/>
+            <TextBlock Grid.Row="0" Grid.Column="1"  Text="{Binding Path=FirstName, Mode=TwoWay}" FontFamily="Arial"   FontWeight="Normal"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Last Name" FontFamily="Arial"   FontWeight="Bold"/>
+            <TextBlock Grid.Row="1" Grid.Column="1"  Text="{Binding Path=LastName, Mode=TwoWay}" FontFamily="Arial"  FontWeight="Normal"/>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Session Date" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=SessionDate}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Signing Origin" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=Origin}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Session Date" FontFamily="Arial"  FontWeight="Bold"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=SessionDate}" FontFamily="Arial"  FontWeight="Normal"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Signing Origin" FontFamily="Arial"  FontWeight="Bold"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=Origin}" FontFamily="Arial"  FontWeight="Normal"/>
 
         </Grid>
     </DataTemplate>
     <DataTemplate x:Key="SecuritySetupInfo">
-        <Grid >
+        
+        <Grid ShowGridLines="True">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -35,58 +36,76 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="120"/>
                 <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="FILENAME" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="XML MD" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="COMPUTED MD" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="ALGORITHM" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
+            </Grid.ColumnDefinitions>            
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="FILENAME" FontFamily="Arial"  FontWeight="Bold"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="XML MD" FontFamily="Arial"  FontWeight="Bold"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="COMPUTED MD" FontFamily="Arial"  FontWeight="Bold"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="ALGORITHM" FontFamily="Arial"  FontWeight="Bold"/>
 
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=FileName}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Digest}" Background="{Binding Path=MDStatus}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
-            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=ComputedDigest}" Background="{Binding Path=MDStatus}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
-            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=Algorithm}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=FileName}" FontFamily="Arial"  FontWeight="Normal"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Digest}" Background="{Binding Path=MDStatus}" FontFamily="Arial"  FontWeight="Normal"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=ComputedDigest}" Background="{Binding Path=MDStatus}" FontFamily="Arial"  FontWeight="Normal"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=Algorithm}" FontFamily="Arial"  FontWeight="Normal"/>
 
 
         </Grid>
     </DataTemplate>
     <DataTemplate x:Key="PackageInfo">
         <ListView >
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
             <ListViewItem Background="{DynamicResource ListViewItemGreyBackground}"  >
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Vendor" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Path=PI.Vendor,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                <StackPanel Orientation="Horizontal">                    
+                    <TextBlock Text="Vendor" Width="120" FontFamily="Arial"  FontWeight="Bold"/>
+                    <Border Background="Gray" Width="1" Margin="0,0,1,0"/>
+                    <TextBlock Text="{Binding Path=PI.Vendor,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial"  FontWeight="Normal"/>                    
                 </StackPanel>
             </ListViewItem>
             <ListViewItem >
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Version" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Path=PI.Version,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                    <TextBlock Text="Version" Width="120" FontFamily="Arial"  FontWeight="Bold"/>
+                    <Border Background="Gray" Width="1" Margin="0,0,1,0"/>
+                    <TextBlock Text="{Binding Path=PI.Version,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial"  FontWeight="Normal"/>                   
                 </StackPanel>
             </ListViewItem>
             <ListViewItem Background="{DynamicResource ListViewItemGreyBackground}" >
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Package Name" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Path=PI.Name,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
-                </StackPanel>
+                    <TextBlock Text="Package Name" Width="120" FontFamily="Arial"  FontWeight="Bold"/>
+                    <Border Background="Gray" Width="1" Margin="0,0,1,0"/>
+                    <TextBlock Text="{Binding Path=PI.Name,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial"  FontWeight="Normal"/>
+                 </StackPanel>
             </ListViewItem>
             <ListViewItem >
                 <StackPanel Orientation="Horizontal" >
-                    <TextBlock Text="Date" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Path=PI.PackageDate,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
-                </StackPanel>
+                    <TextBlock Text="Date" Width="120" FontFamily="Arial"  FontWeight="Bold"/>
+                    <Border Background="Gray" Width="1" Margin="0,0,1,0"/>
+                    <TextBlock Text="{Binding Path=PI.PackageDate,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial"  FontWeight="Normal"/>
+                 </StackPanel>
             </ListViewItem>
             <ListViewItem Background="{DynamicResource ListViewItemGreyBackground}" >
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Extraction Path" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Path=PI.ExtractionPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                    <TextBlock Text="Extraction Path" Width="120" FontFamily="Arial"  FontWeight="Bold"/>
+                    <Border Background="Gray" Width="1" Margin="0,0,1,0"/>
+                    <TextBlock Text="{Binding Path=PI.ExtractionPath,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial"  FontWeight="Normal"/>
+                    
                 </StackPanel>
             </ListViewItem>
             <ListViewItem >
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Files to sign" Width="100" FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding Path=PI.NuOfExecutables,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial" FontSize="12" FontWeight="Normal"/>
+                    <TextBlock Text="Files to sign" Width="120" FontFamily="Arial"  FontWeight="Bold"/>
+                    <Border Background="Gray" Width="1" Margin="0,0,1,0"/>
+                    <TextBlock Text="{Binding Path=PI.NuOfExecutables,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" FontFamily="Arial"  FontWeight="Normal"/>                    
                 </StackPanel>
             </ListViewItem>
         </ListView>

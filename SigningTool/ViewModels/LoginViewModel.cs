@@ -165,7 +165,7 @@ namespace SigningTool.ViewModels
                     _signing.StoreType = "KMS";
                     _signing.Enviroment = "TEST";                    
                     parameters.Add("ENV", "TEST");
-                    navigationURI = NavigationURI.NavigationSIXManagedViewUri;
+                    navigationURI = NavigationURI.NavigationSIXQAViewUri;//NavigationURI.NavigationSIXManagedViewUri;
                     PwdManagement.GetSIXPassword(STORETYPE.KMS, ENVIROMENT.TEST, CERTTYPE.QA);
                     status.Success("KMS ENVIROMENT SELECTED", "Enter Password for HSM access");                    
                     StorePassword=PwdManagement.GetSIXPassword(STORETYPE.KMS, ENVIROMENT.TEST, CERTTYPE.QA);
@@ -300,24 +300,24 @@ namespace SigningTool.ViewModels
             SIXSoftwareSigningViewModel _signing = _container.Resolve<SIXSoftwareSigningViewModel>();            
             if (CheckInput(_signing) == false)
                 return;
-            Log(_signing);           
+            //Log(_signing);           
             _signing.FirstName = FirstName;
             _signing.LastName = LastName;
             _signing.SessionDate = SessionDate;
             _manager.RequestNavigate("NavigationRegion", navigationURI, parameters);         
         }
-        private void Log(SIXSoftwareSigningViewModel _signing)
-        {
-            LogData log = _container.Resolve<LogData>();
-            log.SetSessionData(FirstName, LastName, DateTime.Now);
-            log.Operation = LogData.OPERATION.LOGIN;
-            log.OperationResult = LogData.RESULT.LOGIN_SUCCESS;
-            log.e = Converter.Env(_signing.Enviroment);
-            log.Signer = Manu;
-            log.SignerType = Converter.Signer(_signing.SignerType);
-            log.StoreType = Converter.ST(_signing.StoreType);
-            log.Log();
-        }
+        //private void Log(SIXSoftwareSigningViewModel _signing)
+        //{
+        //    LogData log = _container.Resolve<LogData>();
+        //    log.SetSessionData(FirstName, LastName, DateTime.Now);
+        //    log.Operation = LogData.OPERATION.LOGIN;
+        //    log.OperationResult = LogData.RESULT.LOGIN_SUCCESS;
+        //    log.e = Converter.Env(_signing.Enviroment);
+        //    log.Signer = Manu;
+        //    log.SignerType = Converter.Signer(_signing.SignerType);
+        //    log.StoreType = Converter.ST(_signing.StoreType);
+        //    log.Log();
+        //}
         private bool  CheckInput(SIXSoftwareSigningViewModel _signing)
         {
             LoginStatusBarViewModel status = _container.Resolve<LoginStatusBarViewModel>();
@@ -328,11 +328,11 @@ namespace SigningTool.ViewModels
                 return false;
             }
             
-            if (string.IsNullOrEmpty(FirstName)==true || string.IsNullOrEmpty(LastName) == true)
-            {
-                status.Error("SESSION START", "Missing Name.");
-                return false;
-            }
+            //if (string.IsNullOrEmpty(FirstName)==true || string.IsNullOrEmpty(LastName) == true)
+            //{
+            //    status.Error("SESSION START", "Missing Name.");
+            //    return false;
+            //}
             try
             {
                 Infrastructure.HSM.HSM hsm = _container.Resolve<Infrastructure.HSM.HSM>();

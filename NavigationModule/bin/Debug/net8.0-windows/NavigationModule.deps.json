@@ -9,6 +9,7 @@
       "NavigationModule/1.0.0": {
         "dependencies": {
           "Infrastructure": "1.0.0",
+          "KeyManagement": "1.0.0",
           "Microsoft.Xaml.Behaviors.Wpf": "1.1.122",
           "Prism.Unity": "8.1.97",
           "Prism.Wpf": "8.1.97",
@@ -174,6 +175,18 @@
           "Infrastructure.dll": {}
         }
       },
+      "KeyManagement/1.0.0": {
+        "dependencies": {
+          "Infrastructure": "1.0.0",
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.122",
+          "Prism.Unity": "8.1.97",
+          "Prism.Wpf": "8.1.97",
+          "SoftwareSigning": "1.0.0"
+        },
+        "runtime": {
+          "KeyManagement.dll": {}
+        }
+      },
       "SoftwareSigning/1.0.0": {
         "dependencies": {
           "Infrastructure": "1.0.0",
@@ -326,6 +339,11 @@
       "hashPath": "unity.container.5.11.11.nupkg.sha512"
     },
     "Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "KeyManagement/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

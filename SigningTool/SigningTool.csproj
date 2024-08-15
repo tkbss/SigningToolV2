@@ -35,6 +35,7 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\KeyManagement\KeyManagement.csproj" />
     <ProjectReference Include="..\NavigationModule\NavigationModule.csproj" />
+    <ProjectReference Include="..\PackageTree\PackageTree.csproj" />
     <ProjectReference Include="..\SoftwareSigning\SoftwareSigning.csproj" />
   </ItemGroup>
 

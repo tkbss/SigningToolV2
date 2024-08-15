@@ -31,3 +31,12 @@ C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Navigati
 C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\refint\NavigationModule.dll
 C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\NavigationModule.pdb
 C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\ref\NavigationModule.dll
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationQAView.g.cs
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationQAView.baml
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationATMView.g.cs
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationATMView.baml
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationHSMKMView.g.cs
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationHSMKMView.baml
+C:\projects\GIT\SigningToolV2\NavigationModule\bin\Debug\net8.0-windows\KeyManagement.dll
+C:\projects\GIT\SigningToolV2\NavigationModule\bin\Debug\net8.0-windows\KeyManagement.pdb

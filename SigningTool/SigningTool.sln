@@ -5,15 +5,17 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SigningTool", "SigningTool.csproj", "{9D0CF4EA-F2D5-42CD-A141-DFDA9CBD2621}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareSigning", "..\SoftwareSigning\SoftwareSigning.csproj", "{308F9FA1-29FA-4079-BD61-101F8F018262}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftwareSigning", "..\SoftwareSigning\SoftwareSigning.csproj", "{308F9FA1-29FA-4079-BD61-101F8F018262}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyManagement", "..\KeyManagement\KeyManagement.csproj", "{00C2A16B-BCE2-463D-A0B6-4795AFCCA8C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyManagement", "..\KeyManagement\KeyManagement.csproj", "{00C2A16B-BCE2-463D-A0B6-4795AFCCA8C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "..\Infrastructure\Infrastructure.csproj", "{05C4E3FB-3130-4D0D-915D-CB8632FB0F27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "..\Infrastructure\Infrastructure.csproj", "{05C4E3FB-3130-4D0D-915D-CB8632FB0F27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TracingModule", "..\TracingModule\TracingModule.csproj", "{EC6B95DB-2D1F-406C-BFEC-FA53BEF325D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TracingModule", "..\TracingModule\TracingModule.csproj", "{EC6B95DB-2D1F-406C-BFEC-FA53BEF325D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NavigationModule", "..\NavigationModule\NavigationModule.csproj", "{10424596-387D-4BA5-A69B-8629F1A7ECE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NavigationModule", "..\NavigationModule\NavigationModule.csproj", "{10424596-387D-4BA5-A69B-8629F1A7ECE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackageTree", "..\PackageTree\PackageTree.csproj", "{93080D4E-B386-45B9-A75D-81B6D8116866}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{10424596-387D-4BA5-A69B-8629F1A7ECE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10424596-387D-4BA5-A69B-8629F1A7ECE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10424596-387D-4BA5-A69B-8629F1A7ECE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93080D4E-B386-45B9-A75D-81B6D8116866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93080D4E-B386-45B9-A75D-81B6D8116866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93080D4E-B386-45B9-A75D-81B6D8116866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93080D4E-B386-45B9-A75D-81B6D8116866}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

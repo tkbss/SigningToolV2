@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Xml;
 
+
 namespace Infrastructure
 {
 
@@ -75,18 +76,66 @@ namespace Infrastructure
                 }
             }
         }
-        public void ExportPackage(MANUFACTURER m,ENVIROMENT e,SIGNER s,STORETYPE st,string version,string package_name,string target_path)
+        public async Task ExportPackage(MANUFACTURER m,ENVIROMENT e,SIGNER s,STORETYPE st,string version,string package_name,string target_path)
         {
             string f_p = GetVersionExtractionPath(Converter.Manu(m), s,st,e, version,package_name);
-            if (Directory.GetFiles(f_p).Count() == 0)
+            if (Directory.GetFiles(f_p).Length == 0)
                 return;
-            CopyToExportDir(f_p,s,Converter.Env(e));
+            //CopyToExportDir(f_p,s,Converter.Env(e));
+            string exportFilename = string.Empty;
+            var filesToZip=new List<string>();
+            foreach (string fp in Directory.GetFiles(f_p))
+            {
+                string dest_fn = string.Empty;
+                if (Path.GetExtension(fp) == ".sign")
+                {
+                    string t = fp+ ".tmp";
+                    File.Move(fp, t,true);
+                    continue;
+                }
+                if (Path.GetExtension(fp) == ".export")
+                {
+                    exportFilename = fp;
+                    string ex = Path.GetFileNameWithoutExtension(fp);
+                    while (Path.HasExtension(ex) == true)
+                    {
+                        ex = Path.GetFileNameWithoutExtension(ex);
+                    }
+                    ex = Path.Combine(f_p,ex + ".sign");
+                    File.Move(fp, ex,true);
+                    filesToZip.Add(ex);
+                }
+                else
+                {
+                    filesToZip.Add(fp);
+                }
+                
+            }
             string fn= Path.GetFileNameWithoutExtension(Directory.GetFiles(f_p).First(p=>Path.GetExtension(p)==".info"));
-            string z_f = Path.Combine(target_path, fn + ".zip");
-            string export_dir = Path.Combine(f_p, "EXPORT");
-            if (File.Exists(z_f) == true)
-                File.Delete(z_f);
-            ZipFile.CreateFromDirectory(export_dir, z_f);
+            string z_f = Path.Combine(f_p, fn + ".zip");
+            await CreateZipFromFilesAsync(filesToZip, z_f);
+            File.Move(z_f, Path.Combine(target_path, fn + ".zip"),true);
+            string exportSignature = Path.Combine(f_p, Path.GetFileName(Directory.GetFiles(f_p).First(p => Path.GetExtension(p) == ".sign")));
+            File.Move(exportSignature, exportFilename, true);
+            string tmpSignature = Path.Combine(f_p, Path.GetFileName(Directory.GetFiles(f_p).First(p => Path.GetExtension(p) == ".tmp")));
+            File.Move(tmpSignature, exportSignature, true);
+
+        }
+        private  async Task CreateZipFromFilesAsync(IEnumerable<string> filePaths, string destinationZipFilePath)
+        {
+            await Task.Run(() =>
+            {
+                using (var zipArchive = ZipFile.Open(destinationZipFilePath, ZipArchiveMode.Create))
+                {
+                    foreach (var filePath in filePaths)
+                    {
+                        if (File.Exists(filePath))
+                        {
+                            zipArchive.CreateEntryFromFile(filePath, Path.GetFileName(filePath));
+                        }
+                    }
+                }
+            });
         }
         public void ExportATMPackage(MANUFACTURER m, ENVIROMENT e, SIGNER s, STORETYPE st, string version, string package_name, string target_path)
         {
@@ -100,6 +149,38 @@ namespace Infrastructure
             if (File.Exists(z_f) == true)
                 File.Delete(z_f);
             ZipFile.CreateFromDirectory(export_dir, z_f);
+        }
+        public async Task CopyPackageAsync(MANUFACTURER m, ENVIROMENT e, SIGNER s, STORETYPE st, string version, string package_name,
+            ENVIROMENT targetENV,SIGNER targetS)
+        {
+            string sourcePath= GetVersionExtractionPath(Converter.Manu(m), s,  st,  e,  version,  package_name);
+            string targetPath = GetVersionExtractionPath(Converter.Manu(m), targetS,  st,  targetENV,  version,  package_name);
+            if (Directory.Exists(targetPath) == true)
+                Directory.Delete(targetPath, true);
+            Directory.CreateDirectory(targetPath);
+            foreach (string fp in Directory.GetFiles(sourcePath))
+            {
+                string dest_fn = string.Empty;
+                if (Path.GetExtension(fp) == ".sign")
+                    continue;
+                if (Path.GetExtension(fp) == ".export")
+                {                    
+                    string fn = Path.GetFileNameWithoutExtension(fp);
+                    while (Path.HasExtension(fn) == true)
+                    {
+                        fn = Path.GetFileNameWithoutExtension(fn);
+                    }
+                    fn = fn + ".sign";
+                    dest_fn = Path.Combine(targetPath, fn);
+                }
+                else
+                {
+                    string fn = Path.GetFileName(fp);
+                    dest_fn = Path.Combine(targetPath, fn);
+                }                
+                await CopyFileAsync(fp, dest_fn);
+            }
+
         }
         private void CopyToExportDir(string f_p,SIGNER s,string env)
         {
@@ -284,7 +365,7 @@ namespace Infrastructure
         }
         public PackageInfo ReadPackageInfo(string extraction_path,string package_provider)
         {
-            PackageInfo pi=null;
+            PackageInfo pi=new PackageInfo();
             string[] files=Directory.GetFiles(extraction_path);
             if (files.Count() == 0)
                 throw new PackageProcessingException("No package files in extraction path");
@@ -299,7 +380,7 @@ namespace Infrastructure
             }
             try
             {
-                ValidateFileName(fn, out pi);
+                ValidateFileName(fn,  pi);
             }
             catch
             {
@@ -326,8 +407,8 @@ namespace Infrastructure
         }
         private void RemoveSecurityNode(string extraction_path)
         {
-            PackageInfo pi = null;
-            XmlDocument doc = LoadDoc(extraction_path,out pi);
+            PackageInfo pi = new PackageInfo();
+            XmlDocument doc = LoadDoc(extraction_path, pi);
             if (doc == null)
                 return;            
             XmlNode security_node= doc.DocumentElement.SelectSingleNode(xml_security);
@@ -337,10 +418,9 @@ namespace Infrastructure
             doc.Save(info_path);
         }
         
-        private XmlDocument LoadDoc(string extraction_path,out PackageInfo pi)
+        private XmlDocument LoadDoc(string extraction_path,PackageInfo pi)
         {
-            string[] files = Directory.GetFiles(extraction_path);
-            pi = null;
+            string[] files = Directory.GetFiles(extraction_path);            
             if (files.Count() == 0)
                 return null;            
             string fn = files[0];
@@ -352,7 +432,7 @@ namespace Infrastructure
                     break;
                 }
             }
-            ValidateFileName(fn, out pi);
+            ValidateFileName(fn,  pi);
             pi.ExtractionPath = extraction_path;
             string info_path = Path.Combine(pi.ExtractionPath, pi.FileName + ".info");
             XmlDocument doc = new XmlDocument();
@@ -361,8 +441,8 @@ namespace Infrastructure
         }
         private void AddSecurityInfo(string extraction_path)
         {
-            PackageInfo pi = null;
-            XmlDocument doc = LoadDoc(extraction_path, out pi);
+            PackageInfo pi = new PackageInfo();
+            XmlDocument doc = LoadDoc(extraction_path, pi);
             XmlElement sec = doc.CreateElement("security");
             XmlNode info_node = doc.DocumentElement.SelectSingleNode(@"/infodata");
             info_node.AppendChild(sec);
@@ -472,9 +552,9 @@ namespace Infrastructure
 
         }
 
-        public bool ValidateFileName(string fn, out PackageInfo pi)
+        public bool ValidateFileName(string fn, PackageInfo pi)
         {
-            pi = new PackageInfo();
+            
             string f=Path.GetFileNameWithoutExtension(fn);
             pi.FileName = f;
             string[] fn_name_parts = f.Split(fn_seperator, StringSplitOptions.RemoveEmptyEntries);
@@ -492,7 +572,7 @@ namespace Infrastructure
             pi.Date= fn_name_parts[3];
             return true;
         }
-        public bool Extraction(SIGNER s,STORETYPE st,ENVIROMENT e,PackageInfo pi,string zip_file)
+        public async Task<bool> ExtractionAsync(SIGNER s,STORETYPE st,ENVIROMENT e,PackageInfo pi,string zip_file)
         {
             try
             {
@@ -507,7 +587,7 @@ namespace Infrastructure
                     Directory.CreateDirectory(p_name_path);
                 }
                 catch { }
-                Unzip(p_name_path, zip_file);
+                await UnzipAsync(p_name_path, zip_file);
                 pi.ExtractionPath = p_name_path;
                 pi.Executables = new List<string>();
                               
@@ -582,6 +662,32 @@ namespace Infrastructure
             }
 
         }
-        
+        private async Task UnzipAsync(string target_dir, string zip_file)
+        {
+            await Task.Run(async () =>
+            {
+                string fn=Path.GetFileName(zip_file);
+                string localFile= Path.Combine(target_dir, fn);
+                await CopyFileAsync(zip_file, localFile);
+                zip_file = localFile;
+                using (ZipArchive archive = ZipFile.OpenRead(zip_file))
+                {
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+                        entry.ExtractToFile(Path.Combine(target_dir, entry.FullName));
+                    }
+                }
+                File.Delete(zip_file);
+            });
+        }
+        public static async Task CopyFileAsync(string sourceFilePath, string destinationFilePath)
+        {
+            using (var sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: (100*4096), useAsync: true))
+            using (var destinationStream = new FileStream(destinationFilePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: (100 * 4096), useAsync: true))
+            {
+                await sourceStream.CopyToAsync(destinationStream);
+            }
+        }
+
     }
 }

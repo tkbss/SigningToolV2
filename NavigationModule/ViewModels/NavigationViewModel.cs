@@ -3,6 +3,8 @@ using NavigationModule.Models;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
+using SigningKeyManagment.ViewModels;
+using SoftwareSigning.Model;
 using SoftwareSigning.ViewModels;
 using System.Windows;
 using System.Windows.Input;
@@ -18,11 +20,14 @@ namespace NavigationModule.ViewModels
         IRegionManager _manager;
         string signer;
         string enviroment;
+        bool skipNavigate= false;
         
         public ICommand KeyGenerationCommand { get; private set; }
         public ICommand ImportPackageCommand { get; private set; }
         public ICommand ChangeSessionCommand { get; private set; }
-        public ICommand ManuSoftwareSigningCommand { get; private set; }
+        public ICommand QANavigationCommand { get; private set; }
+        public ICommand NavigationATMTestCommand { get; private set; }
+        public ICommand NavigationATMPRODCommand { get; private set; }
         public ICommand ShowTraceCommand { get; private set; }
 
         
@@ -34,13 +39,25 @@ namespace NavigationModule.ViewModels
         {
             get { return mpm; }
         }
+        KeyGenerationViewModel _keyGenerationViewModel;
+        public KeyGenerationViewModel KeyGenerationViewModel 
+        { 
+            get { return _keyGenerationViewModel; } 
+            set { SetProperty(ref _keyGenerationViewModel, value); } 
+        }   
 
-        
 
-        
         string Manufacturer { get; set; }
         
-        
+        PackageDropModel _pd;
+        public PackageDropModel PackageDrop
+        {
+            get { return _pd; }
+            set
+            {
+                SetProperty(ref _pd, value);
+            }
+        }
         string manu_packages;
         public string ManuPackages
         {
@@ -67,19 +84,87 @@ namespace NavigationModule.ViewModels
         {
             _manager = manager;
             _container = container;
-            mpm = new PackageManagementModel(_container, OnManuSoftwareSigning, manufacturers);
-            
+            mpm = _container.Resolve<PackageManagementModel>();
+            mpm.ManuSoftwareSigning = OnManuSoftwareSigning;
+            mpm.SetManufacturers(manufacturers);
+            KeyGenerationViewModel = _container.Resolve<KeyGenerationViewModel>();
+
+
             KeyGenerationCommand = new DelegateCommand(this.OnKeyGeneration);
             ImportPackageCommand = new DelegateCommand(this.OnImportPackage);
             ChangeSessionCommand = new DelegateCommand(this.OnChangeSession);
             HSMStatusCommand = new DelegateCommand(this.OnHSMStatus);
-            ShowTraceCommand = new DelegateCommand(this.OnShowTraceCommand);
-           
+            QANavigationCommand = new DelegateCommand(OnQANavigation);
+            NavigationATMTestCommand = new DelegateCommand(OnATMTestNavigation);
+            NavigationATMPRODCommand = new DelegateCommand(OnATMProdNavigation);
+
+
+
         }
-        private void OnShowTraceCommand()
+        private void OnATMTestNavigation() 
         {
-            _manager.RequestNavigate("MainRegion", NavigationURI.TraceDataViewUri);
-            _manager.RequestNavigate("ToolbarRegion", NavigationURI.TraceDataToolbarViewUri);
+            SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();
+            signing.Origin = "SIX-ATM";
+            signing.StoreType = "KMS";
+            signing.Enviroment = "TEST";
+            signing.Signer = "SIX";
+            signing.SignerType = "ATM";
+            var packagedrop = _container.Resolve<PackageDropModel>();
+            ENVIROMENT e = ENVIROMENT.TEST;
+            if (packagedrop.LoadedPackage != null)
+            {
+                NavigationParameters parameters = MakeParameters(packagedrop.LoadedPackage.Version, Converter.Vendor(packagedrop.LoadedPackage.Vendor), Converter.Env(e), packagedrop.LoadedPackage.Name);
+                _manager.RequestNavigate("NavigationRegion", new Uri("NavigationATMView", UriKind.Relative), parameters);
+            }
+            else
+            {
+                NavigationParameters parameters = MakeParameters(string.Empty, string.Empty, Converter.Env(e), string.Empty);
+                _manager.RequestNavigate("NavigationRegion", new Uri("NavigationATMView", UriKind.Relative), parameters);
+            }
+
+        }
+        private void OnATMProdNavigation()
+        {
+            SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();
+            signing.Origin = "SIX-ATM";
+            signing.StoreType = "KMS";
+            signing.Enviroment = "PROD";
+            signing.Signer = "SIX";
+            signing.SignerType = "ATM";
+            var packagedrop = _container.Resolve<PackageDropModel>();
+            ENVIROMENT e = ENVIROMENT.PROD;
+            if (packagedrop.LoadedPackage != null)
+            {
+                NavigationParameters parameters = MakeParameters(packagedrop.LoadedPackage.Version, Converter.Vendor(packagedrop.LoadedPackage.Vendor), Converter.Env(e), packagedrop.LoadedPackage.Name);
+                _manager.RequestNavigate("NavigationRegion", new Uri("NavigationATMView", UriKind.Relative), parameters);
+            }
+            else
+            {
+                NavigationParameters parameters = MakeParameters(string.Empty, string.Empty, Converter.Env(e), string.Empty);
+                _manager.RequestNavigate("NavigationRegion", new Uri("NavigationATMView", UriKind.Relative), parameters);
+            }
+
+        }
+        private void OnQANavigation()
+        {
+            SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();
+            signing.Origin = "SIX-QA";
+            signing.StoreType = "KMS";
+            signing.Enviroment = "TEST";
+            signing.Signer = "SIX";
+            signing.SignerType = "QA";
+            var packagedrop = _container.Resolve<PackageDropModel>();
+            ENVIROMENT e = ENVIROMENT.TEST;
+            if (packagedrop.DropedPackage == null)
+            { 
+                NavigationParameters parameters = MakeParameters(string.Empty, string.Empty, Converter.Env(e), string.Empty);
+                _manager.RequestNavigate("NavigationRegion", new Uri("NavigationQAView", UriKind.Relative), parameters);
+            }
+            else 
+            { 
+                NavigationParameters parameters = MakeParameters(packagedrop.DropedPackage.Version, Converter.Vendor(packagedrop.DropedPackage.Vendor), Converter.Env(e), packagedrop.DropedPackage.Name);
+                _manager.RequestNavigate("NavigationRegion", new Uri("NavigationQAView", UriKind.Relative), parameters);
+            }
         }
         private void Navigate(string v,string manu)
         {
@@ -144,20 +229,36 @@ namespace NavigationModule.ViewModels
         }
         public void OnKeyGeneration()
         {
-            
+            skipNavigate = true;
+            SIXSoftwareSigningViewModel vm = _container.Resolve<SIXSoftwareSigningViewModel>();
             NavigationParameters parameters = MakeParameters(string.Empty, string.Empty, enviroment, string.Empty);
-            parameters.Add("MANAGED", "UNMANAGED");
+            if (signer == Converter.Signer(SIGNER.MANU))
+                parameters.Add("MANAGED", "UNMANAGED");
+            else
+                parameters.Add("MANAGED", Converter.ST(STORETYPE.KMS));
             parameters.Add("MANU", signer);
-            if (signer=="SIX-QA")
-                _manager.RequestNavigate("ToolbarRegion", NavigationURI.QAkeyGenerationToolbvarViewUri);
-            else if(signer=="SIX-ATM")
-                _manager.RequestNavigate("ToolbarRegion", NavigationURI.ATMkeyGenerationToolbvarViewUri);
+            if (signer == "SIX-QA")
+            {
+                if(vm.StoreType== Converter.ST(STORETYPE.KMS))
+                    _manager.RequestNavigate("ToolbarRegion", NavigationURI.KMSQAKeyGenerationToolbarViewUri);
+                else
+                    _manager.RequestNavigate("ToolbarRegion", NavigationURI.QAkeyGenerationToolbvarViewUri);                
+                _manager.RequestNavigate("NavigationRegion", new Uri("NavigationHSMKMView", UriKind.Relative));
+            }
+            else if (signer == "SIX-ATM")
+            {
+                   if(vm.StoreType== Converter.ST(STORETYPE.KMS))
+                    _manager.RequestNavigate("ToolbarRegion", NavigationURI.KMSATMKeyGenerationToolbarViewUri);
+                else
+                    _manager.RequestNavigate("ToolbarRegion", NavigationURI.ATMkeyGenerationToolbvarViewUri);
+                _manager.RequestNavigate("NavigationRegion", new Uri("NavigationHSMKMView", UriKind.Relative));
+            }                
             else
                 _manager.RequestNavigate("ToolbarRegion", NavigationURI.MANUKeyGenerationToolbarViewUri);
 
             _manager.RequestNavigate("MainRegion", NavigationURI.keyGenerationViewUri, parameters);
             _manager.RequestNavigate("StatusRegion", NavigationURI.SIXSoftwareSigningStatusBarView);
-            
+            skipNavigate = false;
         }
         
         public void LoadAllVersions(string signer,string store_type,string env)
@@ -171,7 +272,13 @@ namespace NavigationModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
+            if (skipNavigate==true)
+            {
+                skipNavigate = false;
+                return;
+            }
             SIXSoftwareSigningViewModel vm = _container.Resolve<SIXSoftwareSigningViewModel>();
+            PackageDrop = _container.Resolve<PackageDropModel>();
             vm.LoadAllVersions = LoadAllVersions;
             vm.SelectVersion = SelectVersion;            
             enviroment = vm.Enviroment;
@@ -180,14 +287,15 @@ namespace NavigationModule.ViewModels
             Manufacturer = manu_ct[0];
             ManuPackages = Manufacturer + " PACKAGES";
             LoadAllVersions(signer,vm.StoreType,enviroment);
-            LoadOtherRegions(enviroment, signer);
+            LoadOtherRegions(enviroment, signer,  navigationContext);
         }
         
-        private void LoadOtherRegions(string env,string signer)
+        private void LoadOtherRegions(string env,string signer, NavigationContext navigationContext)
         {
 
             SIGNER s = Converter.Signer(signer);
             _manager.RequestNavigate("StatusRegion", NavigationURI.SIXSoftwareSigningStatusBarView);
+            //_manager.RequestNavigate("TreeRegion", NavigationURI.PacakageTreeViewUri);
             if (s == SIGNER.ATM_DEVICE)
             {
                 _manager.RequestNavigate("ToolbarRegion", NavigationURI.signingToolbarATMDeviceViewUri);
@@ -206,8 +314,8 @@ namespace NavigationModule.ViewModels
             }
             else
             {
-                NavigationParameters parameters = MakeParameters(string.Empty, string.Empty, enviroment, string.Empty);
-                _manager.RequestNavigate("MainRegion", NavigationURI.SIXsigningViewUri, parameters);             
+                //NavigationParameters parameters = MakeParameters(string.Empty, string.Empty, enviroment, string.Empty);
+                _manager.RequestNavigate("MainRegion", NavigationURI.SIXsigningViewUri, navigationContext.Parameters);             
                 
             }
 

@@ -93,11 +93,11 @@ namespace SigningKeyManagment.ViewModels
                 SetProperty(ref qa_key_gen_enabled, value);
             }
         }
-        public KeyGenerationToolbarViewModel(IUnityContainer container, IUnmanagedCertificates cert)
+        public KeyGenerationToolbarViewModel(IUnityContainer container)
         {
             _container = container;
-            viewdata=container.Resolve<KeyGenerationViewModel>();           
-            ch = (UnmanagedCertificates)cert;
+            viewdata=container.Resolve<KeyGenerationViewModel>();
+            ch = _container.Resolve<UnmanagedCertificates>();
             this.CreateCAKeysCommand = new DelegateCommand(this.OnCreateCAKeys);
             this.CreateQAKeysCommand = new DelegateCommand(this.OnCreateQAKeys);
             this.CreateATMKeysCommand = new DelegateCommand(this.OnCreateATMKeys);
@@ -213,15 +213,19 @@ namespace SigningKeyManagment.ViewModels
         private void OnSignRequest()
         {
             SIXSoftwareSigningStatusBarViewModel status = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Requests (*.der)|*.der|All files (*.*)|*.*";
-            if (dialog.ShowDialog() == false)
-                return;
-            string cert_req_fn = dialog.FileName;
+            SIXSoftwareSigningViewModel sig_view = _container.Resolve<SIXSoftwareSigningViewModel>();           
+            string cert_req_fn= viewdata.ManuCertRequest;
+            if (string.IsNullOrEmpty(viewdata.ManuCertRequest)==true)
+            {
+                OpenFileDialog dialog = new OpenFileDialog();
+                status.Error("SIGN PKCS10 REQUEST", "No PKCS10 request available");
+                dialog.Filter = "Requests (*.der)|*.der|All files (*.*)|*.*";
+                if (dialog.ShowDialog() == false)
+                    return;
+                cert_req_fn = dialog.FileName; 
+            }           
             string pwd = GetPassword();
-            string certificate;
-            SIXSoftwareSigningViewModel sig_view = _container.Resolve<SIXSoftwareSigningViewModel>();
-            SoftwareSigningToolbarViewModel sig_tb = _container.Resolve<SoftwareSigningToolbarViewModel>();
+            string certificate;            
             try
             {
                 string sn_cert = string.Empty;
@@ -236,13 +240,12 @@ namespace SigningKeyManagment.ViewModels
             catch(Exception e)
             {
                 status.Error("SIGN PKCS10 REQUEST", e.Message);
-                sig_view.ErrorMessage = e.Message;
-                sig_tb.Log(LogData.OPERATION.MANU_CERT_SIGN, LogData.RESULT.ERROR, sig_view);
+                sig_view.ErrorMessage = e.Message;                
                 return;
             }
             certificate=Path.GetFileName(certificate);
             status.Success("SIGN PKCS10 REQUEST", "Request signed successfull as : "+certificate);
-            sig_tb.Log(LogData.OPERATION.MANU_CERT_SIGN, LogData.RESULT.SUCCESS, sig_view);
+            
         }
         private void OnCreatePKCS10Request()
         {

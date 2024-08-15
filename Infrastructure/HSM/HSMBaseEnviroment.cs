@@ -62,8 +62,12 @@ namespace Infrastructure.HSM
         
         private void Setup()
         {
-            SetRegistry(@"SOFTWARE\SafeNet\HSM\NETCLIENT", "ET_HSM_NETCLIENT_SERVERLIST", "10.153.82.10");
+            ConfigurationAccess cfa = new ConfigurationAccess();
             SetRegistry(@"SOFTWARE\SafeNet\PTKC\GENERAL", "ET_PTKC_GENERAL_LIBRARY_MODE", "NORMAL");
+            string adr=cfa.AccessKey(cfa.CK_QA_IP_ADR);
+            if (string.IsNullOrEmpty(adr) == true)
+                return;//use the address already set in the registry
+            SetRegistry(@"SOFTWARE\SafeNet\HSM\NETCLIENT", "ET_HSM_NETCLIENT_SERVERLIST", adr);            
             //Environment.SetEnvironmentVariable("ET_HSM_NETCLIENT_SERVERLIST", "10.153.82.10", EnvironmentVariableTarget.Process);
             //Environment.SetEnvironmentVariable("ET_PTKC_GENERAL_LIBRARY_MODE", "NORMAL", EnvironmentVariableTarget.Process);
         }
@@ -83,6 +87,7 @@ namespace Infrastructure.HSM
             key.SetValue(parameter, value);
         }
         
+
         protected  void SetIPEnviroment()
         {
             if (ENV_SET == true)
@@ -154,26 +159,7 @@ namespace Infrastructure.HSM
                 HSMStatus.Add(adr, info);
             }
         }
-        protected void SetUpSlots()
-        {
-            if (Initialized == false)
-                return;
-            //int NuOfSlots = Slots.Length;
-            //int i = 0;
-            //char[] del = { ' ' };
-            //string[] ipadr_env = EnviromentIPAddressString.Split(del);
-            //foreach (string ip in ipadr_env)
-            //{
-            //    if (i < NuOfSlots)
-            //    {
-            //        if (HSMStatus.ContainsKey(ip) == true)
-            //        {
-            //            HSMStatus[ip].Slot = Convert.ToInt32(Slots[i]);
-            //        }                    
-            //    }
-            //    i++;
-            //}
-        }
+       
         
     }
 }

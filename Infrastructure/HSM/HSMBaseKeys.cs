@@ -32,7 +32,7 @@ namespace Infrastructure.HSM
             string slot_name = ca.AccessKey(ca.CK_TOKEN_NAME);
             if (string.IsNullOrEmpty(slot_name) == true)
                 slot_name = HSMBaseEnviroment.default_token_name;
-            //string pwd = "324324";
+            TokenPwd = "324324";
             if (string.IsNullOrEmpty(TokenPwd) == true)
                 return 100;
             int r = InteropHSM.OpenSession(TokenPwd, slot_name,slot);

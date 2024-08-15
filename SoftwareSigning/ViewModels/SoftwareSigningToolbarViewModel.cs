@@ -1,14 +1,16 @@
 ﻿using Infrastructure;
 using Infrastructure.Exceptions;
-using Unity;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
+using Prism.Regions;
 using SoftwareSigning.Model;
-using System;
 using System.IO;
 using System.Windows.Input;
+using System.Threading.Tasks;
 using TracingModule;
+using Unity;
+using Prism.Services.Dialogs;
 
 namespace SoftwareSigning.ViewModels
 {
@@ -23,16 +25,25 @@ namespace SoftwareSigning.ViewModels
         public ICommand VerifyPackageCommand { get; private set; }
         IUnityContainer _container;
         public string ErrorMessage { get; set; }
+        public string fn { get; set; }
         public SoftwareSigningToolbarViewModel(IUnityContainer container)
         {
             this.ImportPackageCommand = new DelegateCommand(this.OnImportPackage);
-            this.SignPackageCommand = new DelegateCommand(this.OnSignPackage);
-            this.ExportPackageCommand = new DelegateCommand(this.OnExportPackage);
+            this.SignPackageCommand = new DelegateCommand(async () =>
+            {
+                await OnSignPackage();
+            });
+
+            this.ExportPackageCommand = new DelegateCommand(async () =>
+            {
+                await OnExportPackageAsync();
+            });
             this.RemovePackageCommand = new DelegateCommand(this.OnRemovePackage);
             this.VerifyPackageCommand = new DelegateCommand(this.OnVerifyPackage);
             _container = container;
             SigningEnabled = true;
             ExportEnabled = true;
+            IsOperationInProgress = false;
         }
         
         string toolbar_title;
@@ -51,6 +62,15 @@ namespace SoftwareSigning.ViewModels
             set
             {
                 SetProperty(ref export_enabled, value);
+            }
+        }
+        bool _isOperationInProgress;
+        public bool IsOperationInProgress
+        {
+            get { return _isOperationInProgress; }
+            set
+            {
+                SetProperty(ref _isOperationInProgress, value);
             }
         }
         bool signing_enabled;
@@ -124,11 +144,46 @@ namespace SoftwareSigning.ViewModels
            
 
         }
-        private void OnExportPackage()
+        public async Task OnCopyPackageAsync() 
+        {
+            SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();
+            PackageProcessing pp = _container.Resolve<PackageProcessing>();
+            SIGNER s = Converter.Signer(signing.SignerType);
+            MANUFACTURER m = Converter.Manu(signing.PackageProvider);
+            ENVIROMENT e = Converter.Env(signing.Enviroment);
+            STORETYPE st = Converter.ST(signing.StoreType);
+            if (s == SIGNER.ATM && e == ENVIROMENT.PROD)
+                return;
+            PackageInfo pi = signing.PI.GetPackageInfo();
+            string fn = pp.GetPackageFileName(signing.PackageProvider, s, st, e, signing.PI.Version, signing.PackageName);            
+            if (pp.PackageSigFileExists(m, e, s, st, signing.PI.Version, signing.PackageName) == false)
+            {
+                sbvm.Error("COPY PACKAGE", "No signature file exists. Package copy not possible");
+                return;
+                
+            }
+            ENVIROMENT targetENV=e;
+            SIGNER targetS=s;
+            if (s==SIGNER.QA)
+            {
+                targetENV = ENVIROMENT.TEST;
+                targetS = SIGNER.ATM;
+            }
+            if(s==SIGNER.ATM)
+            {
+                targetS = SIGNER.ATM;
+                targetENV = ENVIROMENT.PROD;
+            }
+            
+            await pp.CopyPackageAsync(m,e,s,st, signing.PI.Version, signing.PackageName,targetENV,  targetS);
+        }
+        private async Task OnExportPackageAsync()
         {
             SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
             PackageProcessing pp = _container.Resolve<PackageProcessing>();
             SIXSoftwareSigningViewModel signingview = _container.Resolve<SIXSoftwareSigningViewModel>();
+            PackageDropModel pdm = _container.Resolve<PackageDropModel>();
             try
             {               
 
@@ -136,22 +191,38 @@ namespace SoftwareSigning.ViewModels
                 MANUFACTURER m = Converter.Manu(signingview.PackageProvider);
                 ENVIROMENT e = Converter.Env(signingview.Enviroment);
                 STORETYPE st = Converter.ST(signingview.StoreType);
-                SaveFileDialog dialog = new SaveFileDialog();
-                if (pp.PackageSigFileExists(m,e, s,st, signingview.PI.Version,signingview.PackageName) == false)
+                string targetPath = string.Empty;
+                if (pp.PackageSigFileExists(m, e, s, st, signingview.PI.Version, signingview.PackageName) == false)
                 {
                     sbvm.Error("EXPORT PACKAGE", "No signature file exists. Package export not possible");
                     return;
                 }
-                dialog.Filter = "Zip (*.zip)|*.zip|All files (*.*)|*.*";
-                dialog.FileName = pp.GetPackageFileName(signingview.PackageProvider, s,st,e, signingview.PI.Version,signingview.PackageName) + ".zip";
-                if (dialog.ShowDialog() == false)
+                if (s==SIGNER.MANU || s==SIGNER.QA)
+                {
+                    await FileDialogExportAsync(sbvm, signingview, pp);
                     return;
-                string tp = dialog.FileName;
-                if (string.IsNullOrEmpty(Path.GetFileName(tp)) == false)
-                    tp = Path.GetDirectoryName(tp);
-                pp.ExportPackage(m,e, s,st, signingview.PI.Version,signingview.PackageName, tp);
+                }
+                if(e==ENVIROMENT.TEST && string.IsNullOrEmpty(pdm.ExportTest) && !Directory.Exists(pdm.ExportTest))
+                {
+                    await FileDialogExportAsync(sbvm, signingview, pp);
+                    return;
+                }                
+                if (e == ENVIROMENT.PROD && string.IsNullOrEmpty(pdm.ExportProd) && !Directory.Exists(pdm.ExportProd))
+                {
+                    await FileDialogExportAsync(sbvm, signingview, pp);
+                    return;
+                }
+                if(e == ENVIROMENT.TEST)
+                {
+                    targetPath = pdm.ExportTest;
+                }
+                else
+                {
+                    targetPath = pdm.ExportProd;
+                }
+                await pp.ExportPackage(m,e, s,st, signingview.PI.Version,signingview.PackageName, targetPath);
                 ErrorMessage = string.Empty;                
-                sbvm.Success("EXPORT PACKAGE", "Package successfull exported.");
+                sbvm.Success("EXPORT PACKAGE", "Package successfull exported to:"+targetPath);
                 Log(LogData.OPERATION.EXPORT, LogData.RESULT.EXPORT_SUCCESS, signingview);
             }
             catch(Exception e)
@@ -161,13 +232,37 @@ namespace SoftwareSigning.ViewModels
                 sbvm.Error("EXPORT PACKAGE", "Processing error: "+e.Message);
             }
         }
-        public void OnSignPackage()
+        private async Task FileDialogExportAsync(SIXSoftwareSigningStatusBarViewModel sbvm, SIXSoftwareSigningViewModel signingview, PackageProcessing pp) 
         {
+            SIGNER s = Converter.Signer(signingview.SignerType);
+            MANUFACTURER m = Converter.Manu(signingview.PackageProvider);
+            ENVIROMENT e = Converter.Env(signingview.Enviroment);
+            STORETYPE st = Converter.ST(signingview.StoreType);
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "Zip (*.zip)|*.zip|All files (*.*)|*.*";
+            dialog.FileName = pp.GetPackageFileName(signingview.PackageProvider, s, st, e, signingview.PI.Version, signingview.PackageName) + ".zip";
+            if (dialog.ShowDialog() == false)
+            {
+                sbvm.Error("EXPORT PACKAGE", "Export dialog aborted. No package exported");
+                return;
+            }
+            string tp = dialog.FileName;
+            if (string.IsNullOrEmpty(Path.GetFileName(tp)) == false)
+                tp = Path.GetDirectoryName(tp);
+            await pp.ExportPackage(m, e, s, st, signingview.PI.Version, signingview.PackageName, tp);
+            ErrorMessage = string.Empty;
+            sbvm.Success("EXPORT PACKAGE", "Package successfull exported to: "+tp);
+            Log(LogData.OPERATION.EXPORT, LogData.RESULT.EXPORT_SUCCESS, signingview);
+        }
+        public async Task OnSignPackage()
+        {
+            IsOperationInProgress = true;            
             SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();            
             SecurityProcessing sec = _container.Resolve<SecurityProcessing>();
             SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
             UnmanagedCertificates uc = _container.Resolve<UnmanagedCertificates>();
             PackageProcessing pp = _container.Resolve<PackageProcessing>();
+            //var navi=_container.Resolve<NavigationViewModel>();
             ErrorMessage = string.Empty;
 
             string[] manu_ct = Converter.SplitManuCertype(signing.Origin);
@@ -181,7 +276,8 @@ namespace SoftwareSigning.ViewModels
             {
                 ErrorMessage = "Password for key store not set";
                 Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_ERROR, signing);
-                sbvm.Error("PACKAGE SIGNING", ErrorMessage);                
+                sbvm.Error("PACKAGE SIGNING", ErrorMessage);
+                IsOperationInProgress = false;
                 return;
             }
             signing.SecurityInfo.Clear();
@@ -205,21 +301,27 @@ namespace SoftwareSigning.ViewModels
                     sbvm.Error("PACKAGE SIGNING", ErrorMessage);
                     SigningEnabled = false;
                     ExportEnabled = false;
+                    IsOperationInProgress = false;
                     return;
                 }
             }
-            //pp.RemovePackageSignature(pi);
-            if (signing.PackageVerification == false)
-                return;                    
+            
+            if (signing.PackageVerification == false) { IsOperationInProgress = false; return; }
+                                  
             try
             {
                 //create new setup info                
                 ErrorMessage = string.Empty;                              
                 pp.MakeSetupInfo(provider, s,st,env, signing.PI.Version,signing.PackageName);                         
                 sec.GeneratePackageSignature(st, m, env, ct, pi,pwd);
+                if(s==SIGNER.MANU)
+                {
+                    signing.LoadPackageInfo();
+                }
+                
                 Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_SUCCESS, signing);
                 sbvm.Success("PACKAGE SIGNING", "Package signed successful");
-                //signing.DetermineSigningStatus();
+                
                 sp.DetermineSigningStatus(_container);
                 ExportEnabled = true;
             }
@@ -231,6 +333,7 @@ namespace SoftwareSigning.ViewModels
                 StorePasswordSafe pwds = _container.Resolve<StorePasswordSafe>();
                 pwds.DeleteStorePassword(m,env);                
                 ExportEnabled = false;
+                IsOperationInProgress = false;
             }
             catch(Exception)
             {
@@ -238,15 +341,33 @@ namespace SoftwareSigning.ViewModels
                 Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_ERROR, signing);
                 sbvm.Error("PACKAGE SIGNING", "Error during package signing.");
                 ExportEnabled = false;
+                IsOperationInProgress = false;
             }
+            if(s==SIGNER.QA || s==SIGNER.ATM)
+            {
+                await OnCopyPackageAsync();
+                var navigate = new NavigationModel(_container, _container.Resolve<IRegionManager>());
+                if (s == SIGNER.QA && env == ENVIROMENT.TEST && ExportEnabled == true)
+                {
+                    navigate.Navigate(1);
+                }
+                if (s == SIGNER.ATM && env == ENVIROMENT.TEST && ExportEnabled == true)
+                {
+                    navigate.Navigate(2);
+                }                
+            }
+            IsOperationInProgress = false;
+
         }
-        public void OnImportPackage()
+
+        public async void OnImportPackage()
         {
             SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
-            //SIGNER s = Converter.Signer(signing.Origin);
-            //MANUFACTURER m = Converter.Manu(Converter.SplitManuCertype(signing.Origin)[0]);
+            SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();
+            SIGNER s = Converter.Signer(signing.Origin);
+            MANUFACTURER m = Converter.Manu(Converter.SplitManuCertype(signing.Origin)[0]);
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();           
+
             openFileDialog.Filter = "Packages (*.zip)|*.zip|All files (*.*)|*.*";
             string fn;
             if (openFileDialog.ShowDialog() == true)
@@ -259,9 +380,10 @@ namespace SoftwareSigning.ViewModels
                 sbvm.Error("IMPORT PACAKGE", "Import operation aborted by user.");
                 return;
             }
-            PackageInfo pi = null;
+            PackageInfo pi = new PackageInfo();
             ErrorMessage = string.Empty;
-            if (PackageExtraction(fn, signing, sbvm,out pi) == false)
+            bool r= await PackageExtraction(fn, signing, sbvm, pi);
+            if (r == false)
             {
                 signing.PI = new PackageInfoModel(pi);
                 Log(LogData.OPERATION.IMPORT, LogData.RESULT.IMPORT_ERROR, signing);
@@ -284,7 +406,7 @@ namespace SoftwareSigning.ViewModels
             signing.LoadAllVersions(signing.SignerType,signing.StoreType,signing.Enviroment);
             signing.SelectVersion(signing.PackageProvider, signing.SelectedVersion,signing.Origin,signing.PackageName);                         
         }
-        private bool PackageExtraction(string fn, SIXSoftwareSigningViewModel signing, SIXSoftwareSigningStatusBarViewModel sbvm,out PackageInfo pi)
+        private async Task<bool> PackageExtraction(string fn, SIXSoftwareSigningViewModel signing, SIXSoftwareSigningStatusBarViewModel sbvm,PackageInfo pi)
         {
             
             PackageProcessing pp = _container.Resolve<PackageProcessing>();
@@ -293,7 +415,7 @@ namespace SoftwareSigning.ViewModels
             MANUFACTURER m = Converter.Manu(Converter.SplitManuCertype(signing.Origin)[0]);
             STORETYPE st = Converter.ST(signing.StoreType);
             ENVIROMENT e = Converter.Env(signing.Enviroment);
-            if (pp.ValidateFileName(fn, out pi) == false)
+            if (pp.ValidateFileName(fn, pi) == false)
             {
                 //write error to status bar and return 
                 ErrorMessage = "Package name incorrect. Package not imported.";
@@ -306,8 +428,8 @@ namespace SoftwareSigning.ViewModels
                 sbvm.Error("IMPORT PACKAGE", ErrorMessage);
                 return false;
             }
-
-            if (pp.Extraction(s,st,e, pi, fn) == false)
+            bool r = await pp.ExtractionAsync(s, st, e, pi, fn);
+            if (r == false)
             {
                 //write error to status bar
                 ErrorMessage = pp.Error;

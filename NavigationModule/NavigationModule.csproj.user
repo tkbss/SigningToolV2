@@ -2,7 +2,27 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="Views\NavigationATMView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\NavigationHSMKMView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\NavigationQAView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="NavigationResources.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\NavigationATMView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\NavigationHSMKMView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\NavigationQAView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

@@ -23,7 +23,7 @@
                     <Separator Style="{DynamicResource SeperatorStyle}"/>
                     <Button Width="130" Content="CREATE ATM CERT" Command="{Binding Path=CreateATMCertificateCommand}" IsEnabled="{Binding CreateATMCertEnabled}"/>
                     <Separator Style="{DynamicResource SeperatorStyle}"/>
-                    <Button Content="SIGN REQUEST" Command="{Binding Path=SignManuCertRequestCommand}" IsEnabled="{Binding SignRequestEnabled}"/>
+                    <Button Content="SIGN REQUEST" Command="{Binding Path=SignManuCertRequestCommand}" />
                 </StackPanel>
             </Border>
 

@@ -41,29 +41,40 @@ namespace SigningKeyManagment.ViewModels
                 SetProperty(ref dns_name, value);
             }
         }
-        
+        string _certExportDir;
+        public string CertExportDir
+        {
+            get
+            {
+                return _certExportDir;
+            }
+            set
+            {
+                SetProperty(ref _certExportDir, value);
+            }
+        }
+        string _manuCertRequest;
+        public string ManuCertRequest
+        {
+            get
+            {
+                return _manuCertRequest;
+            }
+            set
+            {
+                SetProperty(ref _manuCertRequest, value);
+            }
+        }
+
         public CERTTYPE CertType { get; set; }
-        //private void InitSIXKeyGenData()
-        //{
-        //    DNSName.SubjectOU = "ATM";
-        //    DNSName.SubjectO = "SIX";
-        //    DNSName.SubjectC = "CH";
-        //    ChkAbort = true;
-        //    ChkBackup = false;
-        //    ChkOverride = false;            
-        //    EnablePassword = false;
-        //}
+        
         private void InitKeyDataGen(string manu,string env,string certype,string store)
         {
             ENVIROMENT e= Converter.Env(env);
             MANUFACTURER m = Converter.Manu(manu);
             CERTTYPE ct = Converter.CertType(certype);
             STORETYPE st = Converter.ST(store);
-            DNSName.SetDefaultName(m, ct, e, st);
-            //DNSName.SubjectCN = manu+"_"+ env + "_SOFTWARE_SIGNING";
-            //DNSName.SubjectOU = "ATM";
-            //DNSName.SubjectO = manu;
-            //DNSName.SubjectC = "CH";
+            DNSName.SetDefaultName(m, ct, e, st);            
             ChkAbort = true;
             ChkBackup = false;
             ChkOverride = false;
@@ -72,11 +83,11 @@ namespace SigningKeyManagment.ViewModels
             else
                 EnablePassword = false;
         }
-        public KeyGenerationViewModel(IUnityContainer container, IUnmanagedCertificates cert)
+        public KeyGenerationViewModel(IUnityContainer container)
         {
-            ch = (UnmanagedCertificates)cert;
+           
             _container = container;
-
+            ch = _container.Resolve<UnmanagedCertificates>();
             StaticText_1 = "SIX CA KEYS";
             StaticText_2 = "QA SIGNING KEYS";
             StaticText_3 = "ATM SIGNING KEYS";
@@ -99,6 +110,16 @@ namespace SigningKeyManagment.ViewModels
             string[] m_c = Converter.SplitManuCertype(Origin);
             MANUFACTURER m = Converter.Manu(m_c[0]);
             ENVIROMENT e = Converter.Env(Enviroment);
+            if (managed == Converter.ST(STORETYPE.KMS))
+            {
+                KMSCertificates kms = new KMSCertificates();
+                var cer = kms.GetCertificate(e, CERTTYPE.ATM);
+                System.Security.Cryptography.X509Certificates.X509Certificate2 ce = new System.Security.Cryptography.X509Certificates.X509Certificate2(cer);
+                IntPtr h = Process.GetCurrentProcess().MainWindowHandle;
+                System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(ce, h);
+                return;
+            }
+            
             CERTTYPE ct;
             string pwd;
             if (m == MANUFACTURER.SIX)
@@ -122,7 +143,17 @@ namespace SigningKeyManagment.ViewModels
             CERTTYPE ct = CERTTYPE.QA;
             MANUFACTURER m = Converter.Manu(m_c[0]);
             ENVIROMENT e = Converter.Env(Enviroment);
-            System.Security.Cryptography.X509Certificates.X509Certificate2 c = new System.Security.Cryptography.X509Certificates.X509Certificate2(ch.GetCertificate(m,e, ct, "1234"));
+            if (managed == Converter.ST(STORETYPE.KMS))
+            {
+                KMSCertificates kms = new KMSCertificates();
+                var cer = kms.GetCertificate(e, ct);
+                System.Security.Cryptography.X509Certificates.X509Certificate2 ce = new System.Security.Cryptography.X509Certificates.X509Certificate2(cer);
+                IntPtr h = Process.GetCurrentProcess().MainWindowHandle;
+                System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(ce, h);
+                return;
+            }
+            var cert = ch.GetCertificate(m, e, ct, "1234");
+            System.Security.Cryptography.X509Certificates.X509Certificate2 c = new System.Security.Cryptography.X509Certificates.X509Certificate2(cert);
             IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
             System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(c, handle);
         }
@@ -132,7 +163,17 @@ namespace SigningKeyManagment.ViewModels
             CERTTYPE ct = CERTTYPE.CA;
             MANUFACTURER m = Converter.Manu(m_c[0]);
             ENVIROMENT e = Converter.Env(Enviroment);
-            System.Security.Cryptography.X509Certificates.X509Certificate2 c=new System.Security.Cryptography.X509Certificates.X509Certificate2(ch.GetCertificate(m,e, ct, "1234"));
+            if(managed==Converter.ST(STORETYPE.KMS))
+            {                 
+                KMSCertificates kms = new KMSCertificates();
+                var cer= kms.GetCertificate(e, ct);
+                System.Security.Cryptography.X509Certificates.X509Certificate2 ce = new System.Security.Cryptography.X509Certificates.X509Certificate2(cer);
+                IntPtr h = Process.GetCurrentProcess().MainWindowHandle;
+                System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(ce, h);
+                return;
+            }            
+            var cert= ch.GetCertificate(m, e, ct, "1234");
+            System.Security.Cryptography.X509Certificates.X509Certificate2 c=new System.Security.Cryptography.X509Certificates.X509Certificate2(cert);
             IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
             System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(c,handle);
         }
@@ -164,8 +205,8 @@ namespace SigningKeyManagment.ViewModels
             Manufacturer = Converter.SplitManuCertype(Origin)[0];
             string ct= Converter.SplitManuCertype(Origin)[1];
             Enviroment = (string)navigationContext.Parameters["ENV"];
-            SetToolbarTitle(Origin +"-"+Enviroment+ " KEY GENERATION");            
             managed = (string)navigationContext.Parameters["MANAGED"];
+            SetToolbarTitle(Origin +"-"+Enviroment+ " KEY GENERATION",Origin,managed);            
             InitKeyDataGen(Manufacturer, enviroment,ct,managed);
             if (Manufacturer == Converter.Manu(MANUFACTURER.SIX) == true)
             {
@@ -181,9 +222,13 @@ namespace SigningKeyManagment.ViewModels
             }
             
             SetExpiry();
-            SignerCertificateMapping cm = _container.Resolve<SignerCertificateMapping>();
-            CertifiedManufactures=new ObservableCollection<string>(cm.CertifiedManufactures(Converter.ST(managed)));
+            LoadCertifiedManufacturer();
 
+        }
+        public void LoadCertifiedManufacturer() 
+        {
+            SignerCertificateMapping cm = _container.Resolve<SignerCertificateMapping>();
+            CertifiedManufactures = new ObservableCollection<string>(cm.CertifiedManufactures(Converter.ST(managed)));
         }
         public void SetManuKeyStatus(string manufacturer,string env)
         {
@@ -282,39 +327,69 @@ namespace SigningKeyManagment.ViewModels
             ExpiryDate = n + s;
         }
         
-        private void SetToolbarTitle(string title)
+        private void SetToolbarTitle(string title,string signer,string store)
         {
-            KeyGenerationToolbarViewModel toolbar = _container.Resolve<KeyGenerationToolbarViewModel>();
-            toolbar.KeyGenTitle = title;
+            if(Converter.Signer(signer)==SIGNER.MANU)
+            {
+                KeyGenerationToolbarViewModel toolbar = _container.Resolve<KeyGenerationToolbarViewModel>();
+                toolbar.KeyGenTitle = title;
+                return;
+            }
+            if(Converter.Signer(signer) == SIGNER.QA && store==Converter.ST(STORETYPE.UNMANAGED))
+            {
+                KeyGenerationToolbarViewModel toolbar = _container.Resolve<KeyGenerationToolbarViewModel>();
+                toolbar.KeyGenTitle = title;
+                return;
+            }
+            if (Converter.Signer(signer) == SIGNER.ATM && store == Converter.ST(STORETYPE.UNMANAGED))
+            {
+                KeyGenerationToolbarViewModel toolbar = _container.Resolve<KeyGenerationToolbarViewModel>();
+                toolbar.KeyGenTitle = title;
+                return;
+            }
+            if (Converter.Signer(signer) == SIGNER.QA && store == Converter.ST(STORETYPE.KMS))
+            {
+                KMSKeyGenerationToolbarViewModel toolbar = _container.Resolve<KMSKeyGenerationToolbarViewModel>();
+                toolbar.KeyGenTitle = title;
+                return;
+            }
+            if (Converter.Signer(signer) == SIGNER.ATM && store == Converter.ST(STORETYPE.KMS))
+            {
+                KMSKeyGenerationToolbarViewModel toolbar = _container.Resolve<KMSKeyGenerationToolbarViewModel>();
+                toolbar.KeyGenTitle = title;
+                return;
+            }
         }
         private void EnableSIXKeyGeneration(MANUFACTURER m)
         {
-            KeyGenerationToolbarViewModel toolbar = _container.Resolve<KeyGenerationToolbarViewModel>();
+            KMSKeyGenerationToolbarViewModel toolbar = _container.Resolve<KMSKeyGenerationToolbarViewModel>();
+            DNSName.DNSEnabled = true;
             if (ChkAbort == true)
             {
                 if (CAKeyStatus == KEYStoreStatus.CREATED)
-                    toolbar.CAKeyGenEnabled = false;
+                    toolbar.CreateCACertEnabled = false;
                 else
-                    toolbar.CAKeyGenEnabled = true;
+                    toolbar.CreateCACertEnabled = true;
                 if (ATMKeyStatus == KEYStoreStatus.CREATED)
-                    toolbar.ATMKeyGenEnabled = false;
+                    toolbar.CreateATMCertEnabled = false;
                 else
-                    toolbar.ATMKeyGenEnabled = true;
+                    toolbar.CreateATMCertEnabled = true;
                 if (QAKeyStatus == KEYStoreStatus.CREATED)
-                    toolbar.QAKeyGenEnabled = false;
+                    toolbar.CreateQACertEnabled = false;
                 else
-                    toolbar.QAKeyGenEnabled = true;
+                    toolbar.CreateQACertEnabled = true;
             }
             else
             {
-                toolbar.CAKeyGenEnabled = true;
-                toolbar.ATMKeyGenEnabled = true;
-                toolbar.QAKeyGenEnabled = true;
+                toolbar.CreateCACertEnabled = true;
+                toolbar.CreateATMCertEnabled = true;
+                toolbar.CreateQACertEnabled = true;
             }
         }
         private void EnableManuKeyGeneration(MANUFACTURER m)
         {
             KeyGenerationToolbarViewModel toolbar = _container.Resolve<KeyGenerationToolbarViewModel>();
+            DNSName.DNSEnabled = true; 
             if (ChkAbort == true)
             {
                 string storetype = "MANU";

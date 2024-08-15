@@ -99,6 +99,16 @@ namespace SoftwareSigning.Model
                 SetProperty(ref package_date, value);
             }
         }
+        string _dropStatus;
+        public string DropStatus
+        {
+            get { return _dropStatus; }
+            set
+            {
+                SetProperty(ref _dropStatus, value);
+            }
+        }
+        
         public List<string> Executables { get; set; }
         public List<SecurityInfo> Security { get; set; }
 

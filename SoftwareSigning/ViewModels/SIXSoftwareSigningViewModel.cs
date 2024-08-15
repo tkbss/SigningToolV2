@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using TracingModule;
+using Infrastructure.Certificates;
 
 namespace SoftwareSigning.ViewModels
 {
@@ -31,6 +32,7 @@ namespace SoftwareSigning.ViewModels
         public ICommand ShowSignerCertificateCommand { get; private set; }
         public ICommand SignForATMCommand { get; private set; }
         public ICommand ExportATMPackageCommand { get; private set; }
+        public ICommand SignPackage { get; private set; }
         public ObservableCollection<PackageSecurityInfoModel> SecurityInfo
         {
             get { return security_info; }
@@ -40,6 +42,18 @@ namespace SoftwareSigning.ViewModels
         public Action<string,string,string,string> SelectVersion = null;
         public System.Security.Cryptography.X509Certificates.X509Certificate VerificationCertificate { get; set; }
         public System.Security.Cryptography.X509Certificates.X509Certificate SigningCertificate { get; set; }
+        ObservableCollection<string> certified_manu;
+        public ObservableCollection<string> CertifiedManufactures
+        {
+            get
+            {
+                return certified_manu;
+            }
+            set
+            {
+                SetProperty(ref certified_manu, value);
+            }
+        }
 
         public string Signer { get; set; }
         public string PackageProvider { get; set; }
@@ -77,16 +91,29 @@ namespace SoftwareSigning.ViewModels
         {
             security_info = new ObservableCollection<PackageSecurityInfoModel>();
             _container = container;
+            ToolbarViewModel = _container.Resolve<SoftwareSigningToolbarViewModel>();
             PackageVerification = false;
             ShowSenderCertificateCommand = new DelegateCommand(this.OnShowSenderCertificate);
             ShowSignerCertificateCommand = new DelegateCommand(this.OnShowSignerCertificate);
             SignForATMCommand=new DelegateCommand(this.OnSignForATM);
             ExportATMPackageCommand = new DelegateCommand(this.OnExportATMPackage);
+            SignPackage = new DelegateCommand(this.OnSignPackage);
             KeyStatus = new KeyStatusModel();
         }
         
 
         public object NavigationURI { get; private set; }
+        public void PackageDropf(string fn) 
+        {
+            var packagedrop = _container.Resolve<SoftwareSigningToolbarViewModel>();
+            packagedrop.fn = fn;
+            packagedrop.OnImportPackage();
+        }
+        public void OnSignPackage() 
+        {
+            SoftwareSigningToolbarViewModel tbvm = _container.Resolve<SoftwareSigningToolbarViewModel>();
+            tbvm.OnSignPackage();
+        }
         public void OnExportATMPackage()
         {
             PackageProcessing pp = _container.Resolve<PackageProcessing>();
@@ -166,9 +193,9 @@ namespace SoftwareSigning.ViewModels
             }
             catch (StorePasswordExceptions)
             {
-                tbvm.ErrorMessage = "Password for key store not correct.";
+                tbvm.ErrorMessage = "Unmanged keystore for ATM does not exist";
                 tbvm.Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_ERROR, this);
-                sbvm.Error("PACKAGE SIGNING", ErrorMessage);
+                sbvm.Error("PACKAGE SIGNING", tbvm.ErrorMessage);
                 StorePasswordSafe pwds = _container.Resolve<StorePasswordSafe>();
                 pwds.DeleteStorePassword(m, env);
                 //ExportEnabled = false;
@@ -185,6 +212,7 @@ namespace SoftwareSigning.ViewModels
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
             PI = null;
+            PackageDrop = _container.Resolve<PackageDropModel>();
             SecurityInfo.Clear();            
             SelectedVersion = (string)navigationContext.Parameters["VERSION"];
             PackageProvider=(string)navigationContext.Parameters["PACKAGE_PROVIDER"];
@@ -201,21 +229,25 @@ namespace SoftwareSigning.ViewModels
             else
                 PSSVisibility = Visibility.Visible;
             SetKeyStatus();
+            CertifiedCertificates();
             SecurityProcessingModel sp = new SecurityProcessingModel();
             if (string.IsNullOrEmpty(SelectedVersion) == false)
             {
                 LoadPackageInfo();
                 sp.SignatureVerification(_container);
             }
-            sp.DetermineSigningStatus(_container);
-            //DetermineSigningStatus();
+            sp.DetermineSigningStatus(_container);            
             if (Origin == "SIX-ATM-DEVICE" && PackageVerification==true)
             {
                 SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
                 sbvm.Success("PACKAGE SIGNATURE VERIFICATION", "Packet successfull verified and ready for installation on ATM.");
             }
         }
-        
+        private void CertifiedCertificates() 
+        {
+            SignerCertificateMapping cm = _container.Resolve<SignerCertificateMapping>();
+            CertifiedManufactures = new ObservableCollection<string>(cm.CertifiedManufactures(STORETYPE.KMS));
+        }
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
             return true;
@@ -225,7 +257,7 @@ namespace SoftwareSigning.ViewModels
         {
            
         }
-        private void SetPackageProviderTitle()
+        public void SetPackageProviderTitle()
         {
             SoftwareSigningToolbarViewModel toolbar = _container.Resolve<SoftwareSigningToolbarViewModel>();
             PackageProviderTitle = "PACKAGE ORIGIN " + PackageProvider;
@@ -249,6 +281,7 @@ namespace SoftwareSigning.ViewModels
             ErrorMessage = string.Empty;
             PackageVerification = false;            
             PackageProcessing pp = _container.Resolve<PackageProcessing>();
+            var packagedrop=_container.Resolve<PackageDropModel>();
             SoftwareSigningToolbarViewModel tbvm = _container.Resolve<SoftwareSigningToolbarViewModel>();
             SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
 
@@ -270,10 +303,9 @@ namespace SoftwareSigning.ViewModels
                 PackageVerification = false;
                 return false;
             }
-            PI = new PackageInfoModel(pi);
-            //SecurityProcessingModel sp = new SecurityProcessingModel();            
-            //sp.SignatureVerification(_container);         
-            //DetermineSigningStatus();
+            PI = new PackageInfoModel(pi); 
+            packagedrop.LoadedPackage = PI;
+            packagedrop.LoadedPackage.DropStatus = "PACKAGE LOADED SUCCESSFULL FOR "+Origin+ " "+Enviroment;
             return true;
             
         }

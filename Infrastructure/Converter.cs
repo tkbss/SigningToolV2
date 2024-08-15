@@ -29,15 +29,7 @@ namespace Infrastructure
             }
         }
         static public string Vendor(string abr)
-        {
-            //Dictionary<string, string> ManuAbrMapping = new Dictionary<string, string>();
-            //ManuAbrMapping["MVS"] = manu_abr[0];
-            ////ManuAbrMapping["SIX"] = manu_abr[1];
-            //ManuAbrMapping["NCR"] = manu_abr[2];
-            //ManuAbrMapping["WINCORE"] = manu_abr[3];
-            //ManuAbrMapping["GLORY"] = manu_abr[4];
-            //ManuAbrMapping["DIEBOLD"] = manu_abr[5];
-            //ManuAbrMapping["MSIX"] = manu_abr[6];
+        {            
             var r = Manufacturer.ManuAbrMapping.First(p=>p.Value==abr);
             return r.Key;
         }

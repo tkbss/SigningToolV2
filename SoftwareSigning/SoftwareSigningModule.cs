@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
+using SoftwareSigning.Model;
 using SoftwareSigning.ViewModels;
-using Unity;
 using SoftwareSigning.Views;
-using Prism.Ioc;
+using Unity;
 
 namespace SoftwareSigning
 {
@@ -20,7 +16,7 @@ namespace SoftwareSigning
             var regionManager = containerProvider.Resolve<RegionManager>();
             regionManager.RegisterViewWithRegion("StatusRegion", typeof(SIXSoftwareSigningStatusBarView));
             regionManager.RegisterViewWithRegion("MainRegion", typeof(SIXSoftwareSigningView));
-            regionManager.RegisterViewWithRegion("MainRegion", typeof(ManuSoftwareSigningView));
+            regionManager.RegisterViewWithRegion("MainRegion", typeof(ManuSoftwareSigningView));            
             regionManager.RegisterViewWithRegion("ToolbarRegion", typeof(SoftwareSigningToolbarView));
             regionManager.RegisterViewWithRegion("ToolbarRegion", typeof(ATMDeviceSoftwareSigningToolbarView));
         }
@@ -30,14 +26,16 @@ namespace SoftwareSigning
             containerRegistry.RegisterSingleton<SIXSoftwareSigningViewModel>();
             containerRegistry.RegisterSingleton<SoftwareSigningToolbarViewModel>();
             containerRegistry.RegisterSingleton<SIXSoftwareSigningStatusBarViewModel>();
+            containerRegistry.RegisterSingleton<PackageDropModel>();
 
-            containerRegistry.RegisterSingleton<SIXSoftwareSigningStatusBarView>();
-            containerRegistry.RegisterSingleton<ManuSoftwareSigningView>();
-            containerRegistry.RegisterSingleton<SIXSoftwareSigningView>();
-            containerRegistry.RegisterSingleton<SoftwareSigningToolbarView>();
-            containerRegistry.RegisterSingleton<ATMDeviceSoftwareSigningToolbarView>();
-
+            containerRegistry.Register<SIXSoftwareSigningStatusBarView>();
+            containerRegistry.Register<ManuSoftwareSigningView>();
+            containerRegistry.Register<SIXSoftwareSigningView>();
+            containerRegistry.Register<SoftwareSigningToolbarView>();
+            containerRegistry.Register<ATMDeviceSoftwareSigningToolbarView>();
             
+
+
 
         }
              

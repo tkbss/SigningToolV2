@@ -72,7 +72,7 @@ namespace Infrastructure.Certificates
             if(ct == CERTTYPE.QA)
                 StoreSIXCertificate(cert, ct, ENVIROMENT.PROD);
         }
-        public string SignManufacturerCertificate(string cert_req,string env, Infrastructure.HSM.HSM hsm)
+        public string SignManufacturerCertificate(string cert_req,string targetPath,string env, Infrastructure.HSM.HSM hsm)
         {
             ENVIROMENT e = Converter.Env(env);
             X509Certificate signer=GetBCCertificate(e, CERTTYPE.QA);
@@ -85,7 +85,8 @@ namespace Infrastructure.Certificates
             DerBitString der_sig = new DerBitString(s);
             AlgorithmIdentifier alogId = new AlgorithmIdentifier(PkcsObjectIdentifiers.Sha256WithRsaEncryption);
             X509CertificateStructure css = new X509CertificateStructure(ManuCert.CertificateStructure.TbsCertificate, alogId, der_sig);
-            string cert_path = Path.ChangeExtension(cert_req, "cer");
+            string certPath= Path.Combine(targetPath, Path.GetFileName(cert_req));
+            string cert_path = Path.ChangeExtension(certPath, "cer");
             FileStream writeStream = new FileStream(cert_path, FileMode.Create);
             byte[] encoded_cert = css.GetDerEncoded();
             writeStream.Write(encoded_cert, 0, encoded_cert.Length);

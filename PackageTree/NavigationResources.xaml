@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="NavigationGridStyle" TargetType="{x:Type Grid}">
+        <Setter Property="Grid.Effect" >
+            <Setter.Value>
+                <DropShadowEffect Color="{DynamicResource {x:Static SystemColors.GradientActiveCaptionColorKey}}"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Grid.Background">
+            <Setter.Value>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF2B486A" Offset="0"/>
+                    <GradientStop Color="#FF07203E" Offset="1"/>
+                    <GradientStop Color="#FFDCE3EA" Offset="0.533"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="NavigationTitle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Text" Value="NAVIGATION"/>
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+
+</ResourceDictionary>

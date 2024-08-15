@@ -83,10 +83,11 @@ namespace Infrastructure.Certificates
         {
             STORETYPE st;
             string env =Converter.Env(e);
-            if (e == ENVIROMENT.TEST)
-                st = STORETYPE.UNMANAGED;
-            else
-                st = STORETYPE.KMS;
+            st=STORETYPE.KMS;
+            //if (e == ENVIROMENT.TEST)
+            //    st = STORETYPE.UNMANAGED;
+            //else
+            //    st = STORETYPE.KMS;
             string signer = string.Empty;
             KeyStoreHandling ks = new KeyStoreHandling();
             string ps = ks.CertifiedPath(MANUFACTURER.SIX, ENVIROMENT.TEST, st);

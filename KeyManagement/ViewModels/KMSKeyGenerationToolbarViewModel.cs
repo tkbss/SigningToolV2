@@ -80,18 +80,36 @@ namespace SigningKeyManagment.ViewModels
         {
             SIXSoftwareSigningStatusBarViewModel status = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
             Infrastructure.HSM.HSM hsm = _container.Resolve<Infrastructure.HSM.HSM>();
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Requests (*.der)|*.der|All files (*.*)|*.*";
-            if (dialog.ShowDialog() == false)
-                return;
-            string cert_req_fn = dialog.FileName;
-            //string pwd = viewdata.CertPwd;
+            var kgvm=_container.Resolve<KeyGenerationViewModel>();
+            string cert_req_fn = kgvm.ManuCertRequest;
+            if (string.IsNullOrEmpty(kgvm.ManuCertRequest) == true)
+            {
+                OpenFileDialog dialog = new OpenFileDialog();                
+                dialog.Filter = "Requests (*.der)|*.der|All files (*.*)|*.*";
+                if (dialog.ShowDialog() == false)
+                { 
+                    status.Error("SIGN PKCS10 REQUEST", "No PKCS10 request selected"); 
+                    return;
+                }
+                    
+                cert_req_fn = dialog.FileName;
+            }
             string certificate;
             try
             {
                 KMSCertificates mc = new KMSCertificates();
-                certificate=mc.SignManufacturerCertificate(cert_req_fn, viewdata.Enviroment, hsm);
-                
+                string? targetPath=string.Empty;
+                if(string.IsNullOrEmpty(kgvm.CertExportDir))
+                {                     
+                    targetPath = Path.GetDirectoryName(cert_req_fn);
+                    kgvm.CertExportDir=Path.GetDirectoryName(cert_req_fn);
+                }
+                else
+                {
+                    targetPath = kgvm.CertExportDir;
+                }
+                certificate=mc.SignManufacturerCertificate(cert_req_fn,targetPath, viewdata.Enviroment, hsm);
+                kgvm.LoadCertifiedManufacturer();
             }
             
             catch (Exception e)
@@ -104,17 +122,37 @@ namespace SigningKeyManagment.ViewModels
         }
         private void OnExportCACertificate()
         {
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "Certificate (*.cer)|*.cer|All files (*.*)|*.*";
-            dialog.FileName = "SIX_CA_"+ viewdata.Enviroment.ToUpper()+"_CERTIFICATE.cer";
-            if (dialog.ShowDialog() == false)
-                return;            
+            var kgvm = _container.Resolve<KeyGenerationViewModel>();
             SIXSoftwareSigningStatusBarViewModel status = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            string fn = "SIX_CA_" + kgvm.Enviroment.ToUpper() + "_CERTIFICATE.cer"; 
+            if (string.IsNullOrEmpty(kgvm.CertExportDir) == true)
+            {
+                SaveFileDialog dialog = new SaveFileDialog();
+                dialog.Filter = "Certificate (*.cer)|*.cer|All files (*.*)|*.*";
+                dialog.FileName = fn;
+                if (dialog.ShowDialog() == false)
+                {
+                    status.Error("EXPORT CA CERTIFICAT", "No CA Certificate file path selected");
+                    return;
+                }
+
+                fn = dialog.FileName;
+            }
+            else
+            {
+                fn = kgvm.CertExportDir + "\\" + fn;
+            }
+           
+           
             try
             {
+                if(File.Exists(fn)==true)
+                {
+                    File.Delete(fn);
+                }
                 KMSCertificates ch = new KMSCertificates();
-                ch.ExportCACertificate(dialog.FileName, Converter.Env(viewdata.Enviroment));
-                status.Success("EXPORT CA CERTIFICATE", "CA certificate successfull exported.");
+                ch.ExportCACertificate(fn, Converter.Env(viewdata.Enviroment));
+                status.Success("EXPORT CA CERTIFICATE", "CA certificate successfull exported: "+fn);
             }
             catch
             {

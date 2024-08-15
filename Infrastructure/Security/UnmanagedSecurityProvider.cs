@@ -30,6 +30,7 @@ namespace Infrastructure
         {
             string sig_inf = Path.Combine(pi.ExtractionPath, pi.FileName + ".sign");
             string info_f = Path.Combine(pi.ExtractionPath, pi.FileName + ".info");
+            string export_f = Path.Combine(pi.ExtractionPath, pi.FileName + ".export");
             return VerifyPackageSignatureInternal(sig_inf, info_f);
         }
         
