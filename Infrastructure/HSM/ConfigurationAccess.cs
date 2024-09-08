@@ -110,6 +110,20 @@ namespace Infrastructure
             }
             return value;
         }
+        public void SetRegistry(string regKey, string parameter, string value)
+        {
+            var key = Registry.CurrentUser.OpenSubKey(regKey, true);
+            if (key == null)
+            {
+                key = Registry.CurrentUser.CreateSubKey(regKey);
+                if (key == null)
+                {
+                    throw new InvalidOperationException($"Creating registry key {regKey} failed");
+                }
+            }
+
+            key.SetValue(parameter, value);
+        }
         public string ReadRegistry(string regKey, string parameter)
         {
             var key = Registry.CurrentUser.OpenSubKey(regKey);

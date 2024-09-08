@@ -21,10 +21,8 @@ C:\projects\GIT\SigningToolV2\SoftwareSigning\obj\Debug\net8.0-windows\Views\SIX
 C:\projects\GIT\SigningToolV2\SoftwareSigning\obj\Debug\net8.0-windows\Views\SoftwareSigningToolbarView.g.cs
 C:\projects\GIT\SigningToolV2\SoftwareSigning\bin\Debug\net8.0-windows\Security\LipingShare.LCLib.dll
 C:\projects\GIT\SigningToolV2\SoftwareSigning\bin\Debug\net8.0-windows\Infrastructure.dll
-C:\projects\GIT\SigningToolV2\SoftwareSigning\bin\Debug\net8.0-windows\TracingModule.dll
 C:\projects\GIT\SigningToolV2\SoftwareSigning\bin\Debug\net8.0-windows\LipingShare.LCLib.dll
 C:\projects\GIT\SigningToolV2\SoftwareSigning\bin\Debug\net8.0-windows\Infrastructure.pdb
-C:\projects\GIT\SigningToolV2\SoftwareSigning\bin\Debug\net8.0-windows\TracingModule.pdb
 C:\projects\GIT\SigningToolV2\SoftwareSigning\obj\Debug\net8.0-windows\Views\ATMDeviceSoftwareSigningToolbarView.baml
 C:\projects\GIT\SigningToolV2\SoftwareSigning\obj\Debug\net8.0-windows\Views\ManuSoftwareSigningView.baml
 C:\projects\GIT\SigningToolV2\SoftwareSigning\obj\Debug\net8.0-windows\Views\SIXSoftwareSigningStatusBarView.baml

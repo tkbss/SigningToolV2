@@ -14,11 +14,9 @@ C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\KeyManageme
 C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\KeyManagement.pdb
 C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\Infrastructure.dll
 C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\SoftwareSigning.dll
-C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\TracingModule.dll
 C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\LipingShare.LCLib.dll
 C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\Infrastructure.pdb
 C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\SoftwareSigning.pdb
-C:\projects\GIT\SigningToolV2\KeyManagement\bin\Debug\net8.0-windows\TracingModule.pdb
 C:\projects\GIT\SigningToolV2\KeyManagement\obj\Debug\net8.0-windows\Dictionary.baml
 C:\projects\GIT\SigningToolV2\KeyManagement\obj\Debug\net8.0-windows\Views\ATMKeyGenerationToolbarView.baml
 C:\projects\GIT\SigningToolV2\KeyManagement\obj\Debug\net8.0-windows\Views\HSMStatusView.baml

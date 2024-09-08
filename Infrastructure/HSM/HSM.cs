@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity;
 
 namespace Infrastructure.HSM
 {
@@ -12,13 +13,14 @@ namespace Infrastructure.HSM
         HSMTestEnviroment te = new HSMTestEnviroment();
         //HSMProdEnviroment pe = new HSMProdEnviroment();
         List<HSMStatusInfo> status = new List<HSMStatusInfo>();
-        
+        IUnityContainer _container;
         public bool PasswordCheckSuccessfull { get; set; }
 
         
 
-        public HSM()
+        public HSM(IUnityContainer container)
         {
+            _container = container; 
             PasswordCheckSuccessfull = false;
         }
         public bool IsConnected(string e)
@@ -81,19 +83,11 @@ namespace Infrastructure.HSM
         {
             PasswordCheckSuccessfull = te.CheckPwd(pwd);
             return PasswordCheckSuccessfull;
-            //if (enviroment == "TEST")
-            //{
-            //    PasswordCheckSuccessfull = te.CheckPwd(pwd);
-            //    return PasswordCheckSuccessfull;
-            //}
-            //else
-            //{
-            //    PasswordCheckSuccessfull=pe.CheckPwd(pwd);
-            //    return PasswordCheckSuccessfull;
-            //}
+            
         }
         public List<KEY_STATUS> KeyStatus(string e)
         {
+            var pwdSafe=_container.Resolve<StorePasswordSafe>();
             te.DetermineKeyStatus();
             List<KEY_STATUS> ks = null;// te.KeyStatus;
             if (e == "TEST")
@@ -103,7 +97,8 @@ namespace Infrastructure.HSM
             }
             else
             {
-                HSMProdKeys pk = new HSMProdKeys();                
+                HSMProdKeys pk = new HSMProdKeys(); 
+                pk.TokenPwd = pwdSafe.GetSIXPassword(STORETYPE.KMS,ENVIROMENT.TEST,CERTTYPE.QA);
                 pk.DetermineKeyStatus(0);
                 ks = pk.KeyStatus;
             }

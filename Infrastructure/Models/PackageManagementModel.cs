@@ -13,7 +13,7 @@ namespace NavigationModule.Models
         IUnityContainer _container;
         
         public ICommand SelectedItemChangedCommand { get; private set; }
-        private PackageModel seletectedItem;
+        public PackageModel SeletectedItem { get; set; }
         public Action<PackageModel> ManuSoftwareSigning { get; set; }
         public void SetManufacturers(string[] manufacturers)
         {
@@ -37,11 +37,11 @@ namespace NavigationModule.Models
             if (o is PackageModel)
             {
                 SelectedTreeViewItem = o;
-                seletectedItem = (PackageModel)o;
-                ManuSoftwareSigning(seletectedItem);
+                SeletectedItem = (PackageModel)o;
+                ManuSoftwareSigning(SeletectedItem);
             }
             else
-                seletectedItem = null;
+                SeletectedItem = null;
             object d = o;
         }
         

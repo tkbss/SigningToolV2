@@ -35,12 +35,20 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\KeyManagement\KeyManagement.csproj" />
     <ProjectReference Include="..\NavigationModule\NavigationModule.csproj" />
-    <ProjectReference Include="..\PackageTree\PackageTree.csproj" />
     <ProjectReference Include="..\SoftwareSigning\SoftwareSigning.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="SIX-Background.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="cryptoki.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ethsm.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

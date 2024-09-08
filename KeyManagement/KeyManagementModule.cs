@@ -6,6 +6,7 @@ using SigningKeyManagment.ViewModels;
 using SigningKeyManagment.Views;
 using SoftwareSigning.Views;
 using SoftwareSigning;
+using System.Windows;
 
 
 
@@ -16,8 +17,8 @@ namespace SigningKeyManagment
         
         public void OnInitialized(IContainerProvider containerProvider)
         {
-            var regionManager = containerProvider.Resolve<RegionManager>();
-            regionManager.RegisterViewWithRegion("MainRegion", typeof(HSMStatusView));
+            var regionManager = containerProvider.Resolve<RegionManager>();            
+            regionManager.RegisterViewWithRegion("MainRegion", typeof(HSMStatusView));           
             regionManager.RegisterViewWithRegion("MainRegion", typeof(KeyGenerationView));
             regionManager.RegisterViewWithRegion("ToolbarRegion", typeof(ATMKeyGenerationToolbarView));
             regionManager.RegisterViewWithRegion("ToolbarRegion", typeof(QAKeyGenerationToolbarView));

@@ -16,7 +16,7 @@ namespace Infrastructure.HSM
         protected static string[] Slots;
         protected ConfigurationAccess cfa = new ConfigurationAccess();
         public static string default_token_name = "ATM_SOFTWARE_SIGNING";
-        protected string TokenPwd;
+        public string TokenPwd;
         public static bool Initialized { get; set; }
         public static string EnviromentIPAddressString
         {
@@ -30,109 +30,41 @@ namespace Infrastructure.HSM
         }
         
 
-        public bool ProbeIPAdr(string ip_adr)
-        {
-            
-            //IPAddress ip = IPAddress.Parse(ip_adr);
-            bool res = false;
-            try
-            {
-                //TcpClient client = new TcpClient(ip_adr, 12396);
-                //if (!client.ConnectAsync(ip, 12396).Wait(500))
-                //{
-                //    // connection failure
-                //    res = false;
-
-                //}
-                //else
-                //{
-                //    res = true;
-                //}
-
-                //client.Close();
-                return true;
-            }
-            catch
-            {
-                //return false;
-                return true;
-            }
-            //return res;
-        }
+        
         
         private void Setup()
         {
             ConfigurationAccess cfa = new ConfigurationAccess();
-            SetRegistry(@"SOFTWARE\SafeNet\PTKC\GENERAL", "ET_PTKC_GENERAL_LIBRARY_MODE", "NORMAL");
+            cfa.SetRegistry(@"SOFTWARE\SafeNet\PTKC\GENERAL", "ET_PTKC_GENERAL_LIBRARY_MODE", "NORMAL");
             string adr=cfa.AccessKey(cfa.CK_QA_IP_ADR);
             if (string.IsNullOrEmpty(adr) == true)
                 return;//use the address already set in the registry
-            SetRegistry(@"SOFTWARE\SafeNet\HSM\NETCLIENT", "ET_HSM_NETCLIENT_SERVERLIST", adr);            
-            //Environment.SetEnvironmentVariable("ET_HSM_NETCLIENT_SERVERLIST", "10.153.82.10", EnvironmentVariableTarget.Process);
+            cfa.SetRegistry(@"SOFTWARE\SafeNet\HSM\NETCLIENT", "ET_HSM_NETCLIENT_SERVERLIST", adr);
+            SetEnvVariable(adr);
+        }
+        private void SetEnvVariable(string adr) 
+        {
+            //Environment.SetEnvironmentVariable("ET_HSM_NETCLIENT_SERVERLIST", adr, EnvironmentVariableTarget.Process);
             //Environment.SetEnvironmentVariable("ET_PTKC_GENERAL_LIBRARY_MODE", "NORMAL", EnvironmentVariableTarget.Process);
         }
-
-        private  void SetRegistry(string regKey, string parameter, string value)
-        {
-            var key = Registry.CurrentUser.OpenSubKey(regKey, true);
-            if (key == null)
-            {
-                key = Registry.CurrentUser.CreateSubKey(regKey);
-                if (key == null)
-                {
-                    throw new InvalidOperationException($"Creating registry key {regKey} failed");
-                }
-            }
-
-            key.SetValue(parameter, value);
-        }
-        
 
         protected  void SetIPEnviroment()
         {
             if (ENV_SET == true)
-                return;
-            //HSMBaseEnviroment e = new HSMBaseEnviroment();
-            //string ip_adr = HSMTestEnviroment.default_atm_test_ip;// + " " + HSMProdEnviroment.default_atm_prod_ip;
-            //char[] del = { ' ' };
-            //string[] adrs = ip_adr.Split(del);
-            //EnviromentIPAddressString = string.Empty;
-            //foreach (string adr in adrs)
-            //{
-            //    if (ProbeIPAdr(adr) == true)
-            //    {
-            //        EnviromentIPAddressString += adr;
-            //        EnviromentIPAddressString += " ";
-            //    }
-            //}
-            //EnviromentIPAddressString = EnviromentIPAddressString.Trim();
-            //Environment.SetEnvironmentVariable("ET_HSM_NETCLIENT_SERVERLIST", EnviromentIPAddressString);
-            //Environment.SetEnvironmentVariable("ET_PTKC_GENERAL_LIBRARY_MODE", "NORMAL");            
-            //if(string.IsNullOrEmpty(EnviromentIPAddressString)==true)
+                return;            
+            Setup();
+            //int r = InteropHSM.Initialize();
+            //if (r == 0)
+            //    Initialized = true;
+            //else
             //{
             //    Initialized = false;
             //    return;
             //}
-            Setup();
-            int r = InteropHSM.Initialize();
-            if (r == 0)
-                Initialized = true;
-            else
-            {
-                Initialized = false;
-                return;
-            }            
+            Initialized=true;
             string tn = cfa.AccessKey(cfa.CK_TOKEN_NAME);
             if (string.IsNullOrEmpty(tn) == true)
-                tn = HSMBaseEnviroment.default_token_name;
-            //string slots_string = InteropHSM.SlotArray(tn);
-            //if (slots_string == "-")
-            //    Slots = new string[0];
-            //else
-            //{
-            //    string del2 = ",";
-            //    Slots = slots_string.Split(del2.ToCharArray());
-            //}
+                tn = HSMBaseEnviroment.default_token_name;            
             ENV_SET = true;
         }
         protected void IpStatus(string ak,string default_ip_adr)
@@ -148,14 +80,7 @@ namespace Infrastructure.HSM
                 HSMStatusInfo info = new HSMStatusInfo();
                 info.Slot = -1;
                 info.IPAdr = adr;
-                if (ProbeIPAdr(adr) == true)
-                {
-                    info.Connection = "CONNECTED";
-                }
-                else
-                {
-                    info.Connection = "FAILED";
-                }
+                info.Connection = "CONNECTED";                
                 HSMStatus.Add(adr, info);
             }
         }

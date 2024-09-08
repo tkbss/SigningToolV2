@@ -6,24 +6,18 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
 using SoftwareSigning.Model;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using TracingModule;
 using Infrastructure.Certificates;
+using System;
 
 namespace SoftwareSigning.ViewModels
 {
-   
+
     public partial class SIXSoftwareSigningViewModel : BindableBase, INavigationAware
     {
         ObservableCollection<PackageSecurityInfoModel> security_info;
@@ -97,22 +91,25 @@ namespace SoftwareSigning.ViewModels
             ShowSignerCertificateCommand = new DelegateCommand(this.OnShowSignerCertificate);
             SignForATMCommand=new DelegateCommand(this.OnSignForATM);
             ExportATMPackageCommand = new DelegateCommand(this.OnExportATMPackage);
-            SignPackage = new DelegateCommand(this.OnSignPackage);
+            SignPackage = new DelegateCommand(async() =>
+            {
+                await OnSignPackageAsync();
+            });
             KeyStatus = new KeyStatusModel();
         }
         
 
         public object NavigationURI { get; private set; }
-        public void PackageDropf(string fn) 
+        public async Task PackageDropfAsync(string fn) 
         {
             var packagedrop = _container.Resolve<SoftwareSigningToolbarViewModel>();
             packagedrop.fn = fn;
-            packagedrop.OnImportPackage();
+            await packagedrop.OnImportPackage();
         }
-        public void OnSignPackage() 
+        public async Task OnSignPackageAsync() 
         {
             SoftwareSigningToolbarViewModel tbvm = _container.Resolve<SoftwareSigningToolbarViewModel>();
-            tbvm.OnSignPackage();
+            await tbvm.OnSignPackage();
         }
         public void OnExportATMPackage()
         {
@@ -123,15 +120,15 @@ namespace SoftwareSigning.ViewModels
             MANUFACTURER m = Converter.Manu(PackageProvider);
             ENVIROMENT e = Converter.Env(Enviroment);
             STORETYPE st = Converter.ST(StoreType);
-            if(PI==null || string.IsNullOrEmpty(PI.Version)==true || string.IsNullOrEmpty(PackageName)==true)
+            if (PI == null || string.IsNullOrEmpty(PI.Version) == true || string.IsNullOrEmpty(PackageName) == true)
             {
                 sbvm.Error("EXPORT PACKAGE", "No Package selected.");
                 return;
             }
             SaveFileDialog dialog = new SaveFileDialog();
-            
+
             dialog.Filter = "Zip (*.zip)|*.zip|All files (*.*)|*.*";
-            dialog.FileName = pp.GetPackageFileName(PackageProvider, s, st,e, PI.Version, PackageName) + ".zip";
+            dialog.FileName = pp.GetPackageFileName(PackageProvider, s, st, e, PI.Version, PackageName) + ".zip";
             if (dialog.ShowDialog() == false)
                 return;
             string tp = dialog.FileName;
@@ -213,6 +210,7 @@ namespace SoftwareSigning.ViewModels
         {
             PI = null;
             PackageDrop = _container.Resolve<PackageDropModel>();
+            SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
             SecurityInfo.Clear();            
             SelectedVersion = (string)navigationContext.Parameters["VERSION"];
             PackageProvider=(string)navigationContext.Parameters["PACKAGE_PROVIDER"];
@@ -231,22 +229,26 @@ namespace SoftwareSigning.ViewModels
             SetKeyStatus();
             CertifiedCertificates();
             SecurityProcessingModel sp = new SecurityProcessingModel();
-            if (string.IsNullOrEmpty(SelectedVersion) == false)
+            if (string.IsNullOrEmpty(SelectedVersion))
             {
-                LoadPackageInfo();
-                sp.SignatureVerification(_container);
+                sbvm.Success("PACKAGE SIGNING", "No Packet selected for signing");
+                return;
             }
+            if(LoadPackageInfo()==false)
+            {                
+                return;
+            }
+            sp.SignatureVerification(_container);            
             sp.DetermineSigningStatus(_container);            
             if (Origin == "SIX-ATM-DEVICE" && PackageVerification==true)
-            {
-                SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            {                
                 sbvm.Success("PACKAGE SIGNATURE VERIFICATION", "Packet successfull verified and ready for installation on ATM.");
             }
         }
         private void CertifiedCertificates() 
         {
             SignerCertificateMapping cm = _container.Resolve<SignerCertificateMapping>();
-            CertifiedManufactures = new ObservableCollection<string>(cm.CertifiedManufactures(STORETYPE.KMS));
+            CertifiedManufactures = new ObservableCollection<string>(cm.CertifiedManufactures(Converter.ST(StoreType)));
         }
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
@@ -267,13 +269,13 @@ namespace SoftwareSigning.ViewModels
                 if (Origin == "SIX-ATM-DEVICE")
                     toolbar.ToolbarTitle = Origin + "-" + Enviroment;
                 else if (Origin=="SIX-QA")
-                    toolbar.ToolbarTitle = Origin+"-"+StoreType+"-SOFTWARE SIGNING";
+                    toolbar.ToolbarTitle = Origin+"-"+StoreType+"-SIGNING";
                 else
-                    toolbar.ToolbarTitle = Origin + "-" + Enviroment + "-SOFTWARE SIGNING";
+                    toolbar.ToolbarTitle = Origin + "-" + StoreType + "-" + Enviroment + "-SIGNING";
             }
             else
             {
-                toolbar.ToolbarTitle = Signer+"-"+Enviroment+ "-SOFTWARE SIGNING";
+                toolbar.ToolbarTitle = Signer+"-"+Enviroment+ "-SIGNING";
             }
         }
         public bool LoadPackageInfo()
@@ -296,11 +298,23 @@ namespace SoftwareSigning.ViewModels
                 
             }
             catch(Exception ex)
-            {                
+            {
+                string v_p = pp.GetVersionPath(PackageProvider, s, st, e, SelectedVersion);
+                if (Directory.Exists(v_p) == true)
+                {
+                    string[] dirEntries = Directory.GetDirectories(v_p);
+                    if (dirEntries == null || dirEntries.Length == 0)
+                    {
+                        Directory.Delete(v_p);
+                    }
+                }
+                LoadAllVersions(Origin, StoreType, Enviroment);
                 tbvm.ErrorMessage = ex.Message;
                 tbvm.Log(LogData.OPERATION.IMPORT, LogData.RESULT.IMPORT_ERROR, this);
-                sbvm.Error("PACKAGE PARSING", ErrorMessage);
+                sbvm.Error("SELECTED PACKAGE PARSING", tbvm.ErrorMessage);
                 PackageVerification = false;
+                SecurityProcessingModel sp = new SecurityProcessingModel();
+                sp.PackageParsingError(_container);
                 return false;
             }
             PI = new PackageInfoModel(pi); 

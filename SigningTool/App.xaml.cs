@@ -6,7 +6,6 @@ using SoftwareSigning;
 using NavigationModule;
 using SigningKeyManagment;
 using Infrastructure;
-using PackageTree;
 namespace SigningTool
 {
     /// <summary>
@@ -25,13 +24,20 @@ namespace SigningTool
         }
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
-            var catalog = moduleCatalog;
-            catalog.AddModule(typeof(StartupModule));                   
-            catalog.AddModule(typeof(InfrastructureModule));
-            catalog.AddModule(typeof(KeyManagementModule));
-            catalog.AddModule(typeof(Navigation));
-            catalog.AddModule(typeof(SoftwareSigningModule));
-            catalog.AddModule(typeof(TracingModule.TracingModule));
+            try
+            {
+                var catalog = moduleCatalog;
+                catalog.AddModule(typeof(StartupModule));
+                catalog.AddModule(typeof(InfrastructureModule));
+                catalog.AddModule(typeof(KeyManagementModule));
+                catalog.AddModule(typeof(Navigation));
+                catalog.AddModule(typeof(SoftwareSigningModule));
+                
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show("Connection to HSM failed. Configure new adress in App.Config");
+            }
         }
     }
 }

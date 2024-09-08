@@ -41,7 +41,7 @@ namespace SigningTool.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            viewM.StorePassword=PwdBox.Password;
+            viewM.StorePassword = viewM.Password;//PwdBox.Password;
         }
 
         

@@ -174,17 +174,6 @@
           "Infrastructure.dll": {}
         }
       },
-      "TracingModule/1.0.0": {
-        "dependencies": {
-          "Infrastructure": "1.0.0",
-          "Microsoft.Xaml.Behaviors.Wpf": "1.1.122",
-          "Prism.Unity": "8.1.97",
-          "Prism.Wpf": "8.1.97"
-        },
-        "runtime": {
-          "TracingModule.dll": {}
-        }
-      },
       "LipingShare.LCLib/1.0.6162.31828": {
         "runtime": {
           "LipingShare.LCLib.dll": {
@@ -314,11 +303,6 @@
       "hashPath": "unity.container.5.11.11.nupkg.sha512"
     },
     "Infrastructure/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "TracingModule/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

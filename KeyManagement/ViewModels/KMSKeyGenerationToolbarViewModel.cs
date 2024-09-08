@@ -31,6 +31,7 @@ namespace SigningKeyManagment.ViewModels
             this.SignManuCertRequestCommand =new DelegateCommand(this.OnSignManuCertRequest);
             this.ExportCACertificateCommand = new DelegateCommand(this.OnExportCACertificate);
         }
+        
         string key_gen_title;
         public string KeyGenTitle
         {

@@ -55,5 +55,17 @@ namespace NavigationModule.Views
                 }
             }
         }
+        private void Rectangle_CertManuDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var docPath = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (File.Exists(docPath[0]))
+                {
+                    NavigationViewModel vm = (NavigationViewModel)DataContext;
+                    vm.KeyGenerationViewModel.CertifiedManuDrop(docPath[0]);
+                }
+            }
+        }
     }
 }

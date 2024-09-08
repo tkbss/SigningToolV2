@@ -15,20 +15,22 @@ namespace SigningTool
         public void OnInitialized(IContainerProvider containerProvider)
         {
             var regionManager = containerProvider.Resolve<RegionManager>();
+            regionManager.RegisterViewWithRegion("StatusRegion", typeof(LoginStatusBarView));
             regionManager.RegisterViewWithRegion("MainRegion", typeof(LoginView));
             regionManager.RegisterViewWithRegion("ToolbarRegion", typeof(LoginToolbarView));
-            regionManager.RegisterViewWithRegion("StatusRegion", typeof(LoginStatusBarView));
+            
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterSingleton<LoginViewModel>();
             containerRegistry.RegisterSingleton<LoginStatusBarViewModel>();
+            containerRegistry.RegisterSingleton<LoginStatusBarView>();
+            containerRegistry.RegisterSingleton<LoginViewModel>();
+            
 
 
             containerRegistry.RegisterSingleton<LoginView>();
-            containerRegistry.Register<LoginToolbarView>();
-            containerRegistry.Register<LoginStatusBarView>();
+            containerRegistry.Register<LoginToolbarView>();            
             containerRegistry.Register<NavigationSIXManagedView>();
         }
     }

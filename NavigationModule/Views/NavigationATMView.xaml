@@ -31,7 +31,7 @@
             <Button Grid.Row="1" Content="CHANGE SESSION" Command="{Binding ChangeSessionCommand}" Width="120" Margin="5"/>
             <Button Grid.Row="2" Content="KEY GENERATION" Command="{Binding KeyGenerationCommand}" Width="120" 
                 Visibility="{Binding Path=KGVisibility}" Margin="5"/>
-            <Button Grid.Row="3" Content="IMPORT PACKAGE" Command="{Binding ImportPackageCommand}" Width="120" Margin="5" />
+            
             <Button Grid.Row="4" Content="QA" Command="{Binding QANavigationCommand}" Width="120" Margin="5" />
             <Button Grid.Row="5" Content="ATM-TEST" Command="{Binding NavigationATMTestCommand}" Width="120" Margin="5" />
             <Button Grid.Row="6" Content="ATM-PROD" Command="{Binding NavigationATMPRODCommand}" Width="120" Margin="5" />

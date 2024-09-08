@@ -10,7 +10,7 @@ namespace Infrastructure.HSM
     {
         
         HSMTestKeys tk = new HSMTestKeys();
-        public static string default_atm_test_ip = "hsmt01.wl.six-group.net";
+        public static string default_atm_test_ip = "hsmt02";
         public List<KEY_STATUS> KeyStatus
         {
             get

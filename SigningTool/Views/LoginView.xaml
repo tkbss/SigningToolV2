@@ -4,8 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SigningTool.Views"
-             
+             xmlns:behaviors="clr-namespace:SigningTool.Behaviors"
+             xmlns:converters="clr-namespace:SigningTool.Converters"
+             xmlns:prism="http://prismlibrary.com/"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
+    <UserControl.Resources>
+        <!-- Use the correct namespace for your converter -->
+        <converters:KeyEventArgsConverter x:Key="KeyEventArgsConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Border BorderThickness="2" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" CornerRadius="15" Margin="10">
         <Border.Effect>
             <DropShadowEffect ShadowDepth="10"/>
@@ -25,19 +32,25 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <GroupBox  Grid.Row="0" Header="CONFIGURED IP ADDRESS" Margin="3,2" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" FontSize="16">
+
+                    <GroupBox  Grid.Row="0" Grid.ColumnSpan="2" Header="CONFIGURED IP ADDRESS" Margin="3,2" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" FontSize="16">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <TextBox Text="{Binding Path=HSMIP}" Margin="5" FontSize="14" />
-                            <Button Content="MODIFY" Grid.Column="1" Command="{Binding Path=ConnectCommand}" Margin="5" />
+                            <Button Content="MODIFY" Grid.Column="1" Command="{Binding Path=ModifyConnectionCommand}" Margin="5" Width="80"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Header="HSM CONNECTION STATUS"   Margin="5" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+                    <GroupBox Grid.Row="1" Header="HSM CONNECTION STATUS"   Margin="5" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">                        
                         <Grid>
-                            <TextBox Text="{Binding Path=HSMIP}" Margin="5" FontSize="14" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBox Text="{Binding Path=HSMConnectionText}" Margin="5" FontSize="14" />
+                            <ProgressBar Grid.Row="1" Height="20" Margin="10" IsIndeterminate="True" Visibility="{Binding IsOperationInProgress, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         </Grid>
                     </GroupBox>
                 </Grid>
@@ -57,16 +70,8 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Column="0" Header="DEVELOPMENT" FontSize="14">
-                                <ComboBox  SelectedIndex="{Binding Path=SIManuDev}" ItemsSource="{Binding Path=ManuList}" Margin="5">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="SelectionChanged">
-                                            <i:InvokeCommandAction Command="{Binding SelectedCommandManuDev}" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>                                    
-                                </ComboBox>
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="PRODUCTION" FontSize="14">
+                            
+                            <GroupBox Grid.ColumnSpan="2" Header="PRODUCTION" FontSize="14">
                                 <ComboBox  Margin="5" SelectedIndex="{Binding Path=SIManuProd}" ItemsSource="{Binding Path=ManuList}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SelectionChanged">
@@ -86,61 +91,33 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <GroupBox Header="QA" Margin="2" Grid.Row="0" Grid.Column="0" FontSize="16">
-                                <ComboBox  SelectedIndex="{Binding Path=SIQA}" Width="200" Margin="0,2" FontSize="14">
+                            <GroupBox Header="HSM" Margin="2" Grid.Row="0" Grid.ColumnSpan="2" FontSize="16">
+                                <ComboBox  SelectedIndex="{Binding Path=SIQA}"  Margin="0,2" FontSize="14">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SelectionChanged">
                                             <i:InvokeCommandAction Command="{Binding SelectedCommandQA}" />
                                         </i:EventTrigger>
-                                    </i:Interaction.Triggers>
+                                    </i:Interaction.Triggers>                                   
                                     <ComboBoxItem>
-                                        <TextBlock Text="UNMANAGED"/>
+                                        <TextBlock Text="QA-SIGNING-PROCESS" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}"/>
                                     </ComboBoxItem>
                                     <ComboBoxItem>
-                                        <TextBlock Text="KMS"/>
-                                    </ComboBoxItem>
-                                </ComboBox>
-                            </GroupBox>
-                            <GroupBox Header="ATM" Margin="2" Grid.Row="0" Grid.Column="1" FontSize="16">
-                                <ComboBox  SelectedIndex="{Binding Path=SIATM}" Width="200" Margin="0,2" FontSize="14">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="SelectionChanged">
-                                            <i:InvokeCommandAction Command="{Binding SelectedCommandATM}" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                    <ComboBoxItem>
-                                        <TextBlock Text="UNMANAGED"/>
+                                        <TextBlock Text="QA-TREE"/>
                                     </ComboBoxItem>
                                     <ComboBoxItem>
-                                        <TextBlock Text="TEST-KMS"/>
+                                        <TextBlock Text="ATM-TEST-TREE"/>
                                     </ComboBoxItem>
                                     <ComboBoxItem>
-                                        <TextBlock Text="PROD-KMS"/>
+                                        <TextBlock Text="ATM-PROD-TREE"/>
                                     </ComboBoxItem>
                                 </ComboBox>
                             </GroupBox>
+                            
                         </Grid>
                     </GroupBox>
                 </Grid> 
             </GroupBox>
-            <GroupBox Grid.Row="2" Header="ATM-DEVICE" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
-                <ComboBox  SelectedIndex="{Binding Path=SIATM_DEVICE}" Width="200" Margin="0,2" FontSize="14">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
-                            <i:InvokeCommandAction Command="{Binding SelectedCommandATMDevice}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                    <ComboBoxItem>
-                        <TextBlock Text="TEST-UNMANAGED"/>
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        <TextBlock Text="TEST-KMS"/>
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        <TextBlock Text="PROD-KMS"/>
-                    </ComboBoxItem>
-                </ComboBox>
-            </GroupBox>
+            
             <GroupBox Grid.Row="3" Header="SESSION DATA" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -154,12 +131,21 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Display Name" Grid.Column="0" Grid.Row="0" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold"/>
-                    <TextBlock Text="User ID" Grid.Column="1" Grid.Row="0" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold" />
-                    <TextBox Text="{Binding Path=FirstName}" Grid.Column="0" Grid.Row="1" Style="{DynamicResource GroupBoxTextBox}" />
-                    <TextBox Text="{Binding Path=LastName}" Grid.Column="1" Grid.Row="1" Style="{DynamicResource GroupBoxTextBox}" />
+                   
+                    <TextBlock Text="User ID" Grid.ColumnSpan="2" Grid.Row="0" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold" />
+                    
+                    <TextBox Text="{Binding Path=LastName}" Grid.ColumnSpan="2" Grid.Row="1" Style="{DynamicResource GroupBoxTextBox}" />
                     <TextBlock Text="STORE PASSWORD" Grid.Column="0" Grid.Row="2" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold" />
-                    <PasswordBox Name="PwdBox" Grid.Column="0" Grid.Row="3"  Style="{DynamicResource GroupBoxPwdBox}" Margin="0,5"/>
+                    <PasswordBox Name="PwdBox" Grid.Column="0" Grid.Row="3" Style="{DynamicResource GroupBoxPwdBox}" Margin="0,5"
+                                 behaviors:PasswordBoxHelper.BindPassword="True"
+                                 behaviors:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="KeyDown">
+                                <prism:InvokeCommandAction Command="{Binding EnterKeyCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </PasswordBox>
+
                     <TextBlock Text="Session Date" Grid.Column="1" Grid.Row="2" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5" FontWeight="Bold"/>
                     <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding Path=SessionDate}" Style="{DynamicResource GroupBoxTextBlock}" Margin="0,5"/>
                 </Grid>
@@ -180,3 +166,48 @@
         </Grid>
     </Border>
 </UserControl>
+<!--<GroupBox Grid.Column="0" Header="DEVELOPMENT" FontSize="14">
+    <ComboBox  SelectedIndex="{Binding Path=SIManuDev}" ItemsSource="{Binding Path=ManuList}" Margin="5">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="SelectionChanged">
+                <i:InvokeCommandAction Command="{Binding SelectedCommandManuDev}" />
+            </i:EventTrigger>
+        </i:Interaction.Triggers>                                    
+    </ComboBox>
+</GroupBox>-->
+<!--<GroupBox Header="PKCS#12 STORE" Margin="2" Grid.Row="0" Grid.Column="1" FontSize="16">
+    <ComboBox  SelectedIndex="{Binding Path=SIATM}" Width="200" Margin="0,2" FontSize="14">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="SelectionChanged">
+                <i:InvokeCommandAction Command="{Binding SelectedCommandATM}" />
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+        <ComboBoxItem>
+            <TextBlock Text="ATM"/>
+        </ComboBoxItem>
+        <ComboBoxItem>
+            <TextBlock Text="QA"/>
+        </ComboBoxItem>
+        <ComboBoxItem>
+            <TextBlock Text="PROD-KMS"/>
+        </ComboBoxItem>
+    </ComboBox>
+</GroupBox>-->
+<!--<GroupBox Grid.Row="2" Header="ATM-DEVICE" Style="{DynamicResource SoftwareSigningGroupBoxStyle}">
+    <ComboBox  SelectedIndex="{Binding Path=SIATM_DEVICE}" Width="200" Margin="0,2" FontSize="14">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="SelectionChanged">
+                <i:InvokeCommandAction Command="{Binding SelectedCommandATMDevice}" />
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+        <ComboBoxItem>
+            <TextBlock Text="TEST-UNMANAGED"/>
+        </ComboBoxItem>
+        <ComboBoxItem>
+            <TextBlock Text="TEST-KMS"/>
+        </ComboBoxItem>
+        <ComboBoxItem>
+            <TextBlock Text="PROD-KMS"/>
+        </ComboBoxItem>
+    </ComboBox>
+</GroupBox>-->

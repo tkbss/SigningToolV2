@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Xml;
+//using static System.Net.WebRequestMethods;
 
 
 namespace Infrastructure
@@ -84,6 +85,7 @@ namespace Infrastructure
             //CopyToExportDir(f_p,s,Converter.Env(e));
             string exportFilename = string.Empty;
             var filesToZip=new List<string>();
+            
             foreach (string fp in Directory.GetFiles(f_p))
             {
                 string dest_fn = string.Empty;
@@ -102,7 +104,7 @@ namespace Infrastructure
                         ex = Path.GetFileNameWithoutExtension(ex);
                     }
                     ex = Path.Combine(f_p,ex + ".sign");
-                    File.Move(fp, ex,true);
+                    File.Copy(fp, ex,true);
                     filesToZip.Add(ex);
                 }
                 else
@@ -111,15 +113,28 @@ namespace Infrastructure
                 }
                 
             }
-            string fn= Path.GetFileNameWithoutExtension(Directory.GetFiles(f_p).First(p=>Path.GetExtension(p)==".info"));
-            string z_f = Path.Combine(f_p, fn + ".zip");
-            await CreateZipFromFilesAsync(filesToZip, z_f);
-            File.Move(z_f, Path.Combine(target_path, fn + ".zip"),true);
-            string exportSignature = Path.Combine(f_p, Path.GetFileName(Directory.GetFiles(f_p).First(p => Path.GetExtension(p) == ".sign")));
-            File.Move(exportSignature, exportFilename, true);
-            string tmpSignature = Path.Combine(f_p, Path.GetFileName(Directory.GetFiles(f_p).First(p => Path.GetExtension(p) == ".tmp")));
-            File.Move(tmpSignature, exportSignature, true);
-
+            try
+            {
+                string fn = Path.GetFileNameWithoutExtension(Directory.GetFiles(f_p).First(p => Path.GetExtension(p) == ".info"));
+                string z_f = Path.Combine(f_p, fn + ".zip");
+                await CreateZipFromFilesAsync(filesToZip, z_f);
+                File.Move(z_f, Path.Combine(target_path, fn + ".zip"), true);
+                string signFile = Directory.GetFiles(f_p).FirstOrDefault(p => Path.GetExtension(p) == ".sign");
+                if (signFile != null)
+                {
+                    File.Delete(signFile);
+                }
+                string moveFile = Directory.GetFiles(f_p).FirstOrDefault(p => Path.GetExtension(p) == ".tmp");
+                if (moveFile != null)
+                {
+                    string targetP = Path.GetFileNameWithoutExtension(moveFile);
+                    File.Move(moveFile, targetP, true);
+                }
+            }
+            catch(Exception ex)
+            {
+                Error = ex.Message;
+            }
         }
         private  async Task CreateZipFromFilesAsync(IEnumerable<string> filePaths, string destinationZipFilePath)
         {
@@ -363,12 +378,22 @@ namespace Infrastructure
             return packages;
 
         }
-        public PackageInfo ReadPackageInfo(string extraction_path,string package_provider)
+        public PackageInfo ReadPackageInfo(string extraction_path, string package_provider)
         {
-            PackageInfo pi=new PackageInfo();
-            string[] files=Directory.GetFiles(extraction_path);
-            if (files.Count() == 0)
-                throw new PackageProcessingException("No package files in extraction path");
+            PackageInfo pi = new PackageInfo();
+            string[] files = Directory.GetFiles(extraction_path);
+            if (files.Count() == 0) 
+            {
+                if (Directory.Exists(extraction_path) == true)
+                {
+                    try
+                    {
+                        Directory.Delete(extraction_path, true);
+                    }
+                    catch { }
+                }
+                throw new PackageProcessingException("No package files in extraction path: " + extraction_path); 
+            }
             string fn = files[0];
             foreach(string f in files)
             {

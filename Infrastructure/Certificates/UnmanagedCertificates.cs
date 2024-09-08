@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace Infrastructure
 {
@@ -188,6 +189,13 @@ namespace Infrastructure
             sn_cert = manu_cert.SubjectDN.ToString();
             StoreManuCertificate(manu_cert);
             return cert_path;
+        }
+        public void ImportCertifiedManufacturer(string certPath,STORETYPE st,ENVIROMENT e) 
+        {
+            string p = keystore.CertifiedPath(MANUFACTURER.SIX, e, st);
+            string cn = Path.GetFileName(certPath);
+            string destination=Path.Combine(p, cn);
+            File.Copy(certPath, destination,true);   
         }
         private void StoreSIXCertificate(X509Certificate c,CERTTYPE ct,ENVIROMENT e)
         {

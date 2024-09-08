@@ -11,16 +11,12 @@ namespace Infrastructure.Certificates
         
         public List<string> CertifiedManufactures(STORETYPE st)
         {
-            List<string> cert_manu_list = new List<string>();
-            ENVIROMENT e;
-            if (st == STORETYPE.KMS)
-                e = ENVIROMENT.PROD;
-            else
-                e= ENVIROMENT.TEST;            
+            List<string> cert_manu_list = new List<string>();                               
             KeyStoreHandling ks = new KeyStoreHandling();
-            string env = Converter.Env(e);            
+                      
             STORETYPE manu_st = st;
-            string ps = ks.CertifiedPath(MANUFACTURER.SIX, ENVIROMENT.TEST, manu_st);            
+            string ps = ks.CertifiedPath(MANUFACTURER.SIX, ENVIROMENT.TEST, manu_st);
+            string env = Converter.Env(ENVIROMENT.TEST);
             foreach (MANUFACTURER m in Converter.Manufactures)
             {
                 string manu = Converter.Manu(m);
@@ -31,6 +27,18 @@ namespace Infrastructure.Certificates
                     string certified = manu + "-" + env;
                     cert_manu_list.Add(certified);
                 }                
+            }
+            env = Converter.Env(ENVIROMENT.PROD);
+            foreach (MANUFACTURER m in Converter.Manufactures)
+            {
+                string manu = Converter.Manu(m);
+                string mcn = ManuCertificateName(manu, env);
+                string fns = Path.Combine(ps, mcn);
+                if (File.Exists(fns) == true)
+                {
+                    string certified = manu + "-" + env;
+                    cert_manu_list.Add(certified);
+                }
             }
             return cert_manu_list;
         }

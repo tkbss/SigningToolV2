@@ -9,7 +9,7 @@ using SoftwareSigning.ViewModels;
 using System.IO;
 
 using System.Windows.Input;
-using TracingModule;
+using SoftwareSigning.Model;
 
 namespace SigningKeyManagment.ViewModels
 {

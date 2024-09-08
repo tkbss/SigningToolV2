@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SigningTool.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="900">
     <Border BorderThickness="2" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" CornerRadius="10" Margin="10">
         <Border.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

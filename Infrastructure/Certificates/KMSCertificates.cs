@@ -207,6 +207,13 @@ namespace Infrastructure.Certificates
             FileStream fs = File.Create(fn);
             fs.Write(cert, 0, cert.Length);
             fs.Close();
+
+            p = CertifiedPath(MANUFACTURER.SIX, ENVIROMENT.TEST, STORETYPE.UNMANAGED);
+            fn = Path.Combine(p, cn);
+             cert = c.GetEncoded();
+            fs = File.Create(fn);
+            fs.Write(cert, 0, cert.Length);
+            fs.Close();
         }
         private string CertificateName(string manu, string enviroment)
         {

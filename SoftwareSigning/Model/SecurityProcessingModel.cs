@@ -3,14 +3,8 @@ using Infrastructure.Certificates;
 using Infrastructure.Exceptions;
 using Unity;
 using SoftwareSigning.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
-using TracingModule;
+using System.Windows.Controls;
 
 namespace SoftwareSigning.Model
 {
@@ -24,6 +18,22 @@ namespace SoftwareSigning.Model
             vm.ExportSignatureExists = "False";
             PackageSigningStatus(vm, _container);
             ATMSigningStatus(vm, _container);
+        }
+        public void PackageParsingError(IUnityContainer container) 
+        {
+            SIXSoftwareSigningViewModel vm = container.Resolve<SIXSoftwareSigningViewModel>();
+            SoftwareSigningToolbarViewModel toolbar = container.Resolve<SoftwareSigningToolbarViewModel>();
+            vm.SignatureStatus = new SolidColorBrush(Colors.Red);
+            vm.CertifcateValidityStatus = new SolidColorBrush(Colors.Red);
+            vm.VerificationCertificateOwner = "UNKNOWN";
+            vm.VerificationCertificate = null;
+            vm.PackageVerification = false;
+            toolbar.SigningEnabled = false;
+            toolbar.ExportEnabled = false;
+            vm.SigningStatus = new SolidColorBrush(Colors.Red);
+            vm.SignatureStatus = new SolidColorBrush(Colors.Red);
+            vm.CertifcateValidityStatus = new SolidColorBrush(Colors.Red);
+            vm.SignerCertificateOwner = "UNKNOWN";
         }
         public void SignatureVerification(IUnityContainer _container)
         {
@@ -203,25 +213,25 @@ namespace SoftwareSigning.Model
         }
         public void Log(LogData.OPERATION op, LogData.RESULT res, SIXSoftwareSigningViewModel signing)
         {
-            LogData log = container.Resolve<LogData>();
+            //LogData log = container.Resolve<LogData>();
 
-            log.Operation = op;
-            log.OperationResult = res;
-            log.e = Converter.Env(signing.Enviroment);
-            log.Signer = Converter.Manu(signing.Signer);
-            log.SignerType = Converter.Signer(signing.SignerType);
-            log.StoreType = Converter.ST(signing.StoreType);
-            log.ErrorMessage = ErrorMessage;
-            int index = log.Log();
-            if (signing.PI != null)
-            {
-                TracePackageData pd = new TracePackageData();
-                pd.Date = signing.PI.PackageDate;
-                pd.PackageName = signing.PI.Name;
-                pd.Vendor = signing.PI.Vendor;
-                pd.Version = signing.PI.Version;
-                log.LogPackage(pd, index);
-            }
+            //log.Operation = op;
+            //log.OperationResult = res;
+            //log.e = Converter.Env(signing.Enviroment);
+            //log.Signer = Converter.Manu(signing.Signer);
+            //log.SignerType = Converter.Signer(signing.SignerType);
+            //log.StoreType = Converter.ST(signing.StoreType);
+            //log.ErrorMessage = ErrorMessage;
+            //int index = log.Log();
+            //if (signing.PI != null)
+            //{
+            //    TracePackageData pd = new TracePackageData();
+            //    pd.Date = signing.PI.PackageDate;
+            //    pd.PackageName = signing.PI.Name;
+            //    pd.Vendor = signing.PI.Vendor;
+            //    pd.Version = signing.PI.Version;
+            //    log.LogPackage(pd, index);
+            //}
         }
         public void ATMSigningStatus(SIXSoftwareSigningViewModel vm, IUnityContainer _container)
         {

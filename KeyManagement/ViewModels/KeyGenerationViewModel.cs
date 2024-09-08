@@ -11,6 +11,7 @@ using System.IO;
 
 using System.Windows.Input;
 using SigningKeyManagment.Models;
+using SoftwareSigning.ViewModels;
 
 namespace SigningKeyManagment.ViewModels
 {
@@ -21,6 +22,7 @@ namespace SigningKeyManagment.ViewModels
         public string Origin { get; set; }
         string enviroment;
         string managed;
+       
         public ICommand ManuKeyGeneratorEnabledCommand { get; private set; }
 
         public ICommand ShowCACertificateCommand { get; private set; }
@@ -65,11 +67,24 @@ namespace SigningKeyManagment.ViewModels
                 SetProperty(ref _manuCertRequest, value);
             }
         }
-
+        string _manuCertDrop;
+        public string ManuCertDrop
+        {
+            get
+            {
+                return _manuCertDrop;
+            }
+            set
+            {
+                SetProperty(ref _manuCertDrop, value);
+            }
+        }
+        
         public CERTTYPE CertType { get; set; }
         
         private void InitKeyDataGen(string manu,string env,string certype,string store)
         {
+            
             ENVIROMENT e= Converter.Env(env);
             MANUFACTURER m = Converter.Manu(manu);
             CERTTYPE ct = Converter.CertType(certype);
@@ -104,6 +119,14 @@ namespace SigningKeyManagment.ViewModels
             StorePasswordSafe pwds = _container.Resolve<StorePasswordSafe>();
             pwd = pwds.GetStorePassword(m, e);            
             return pwd;
+        }
+        public void CertifiedManuDrop(string fpCert) 
+        { 
+            ManuCertDrop = fpCert;            
+            ch.ImportCertifiedManufacturer(fpCert,Converter.ST(managed),Converter.Env(enviroment));
+            LoadCertifiedManufacturer();
+            SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            sbvm.Success("MANUFACTURER CERTIFICATE DROP", "Certified manufacturer certificate installed successfull");
         }
         private void OnShowATMMANUCertificate()
         {
@@ -201,12 +224,13 @@ namespace SigningKeyManagment.ViewModels
         {
             StorePasswordSafe PwdManagement = _container.Resolve<StorePasswordSafe>();
             PwdManagement.PasswordChanged = false;
+            ManuCertDrop= string.Empty; 
             Origin = (string)navigationContext.Parameters["MANU"];                        
             Manufacturer = Converter.SplitManuCertype(Origin)[0];
             string ct= Converter.SplitManuCertype(Origin)[1];
             Enviroment = (string)navigationContext.Parameters["ENV"];
             managed = (string)navigationContext.Parameters["MANAGED"];
-            SetToolbarTitle(Origin +"-"+Enviroment+ " KEY GENERATION",Origin,managed);            
+            SetToolbarTitle(Origin + "-" + managed + "-" +Enviroment+ " KEY GENERATION",Origin,managed);            
             InitKeyDataGen(Manufacturer, enviroment,ct,managed);
             if (Manufacturer == Converter.Manu(MANUFACTURER.SIX) == true)
             {

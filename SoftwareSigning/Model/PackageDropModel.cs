@@ -11,7 +11,7 @@ namespace SoftwareSigning.Model
         IUnityContainer _container;
         public string ErrorMessage { get; set; }
         public Dictionary<string, PackageInfoModel> PackageModels { get; set; }
-        public Dictionary<string, PackageInfo> PackageInfos { get; set; }
+        
 
         public PackageDropModel(IUnityContainer container)
         {
@@ -146,18 +146,7 @@ namespace SoftwareSigning.Model
 
             }
             string key= BuildDictionaryKey(signing.Signer, signing.Enviroment);
-            if(PackageInfos==null)
-            {
-                PackageInfos = new Dictionary<string, PackageInfo>();
-            }
-            if(PackageInfos.ContainsKey(key))
-            {
-                PackageInfos[key] = pi;
-            }
-            else
-            {
-                PackageInfos.Add(key, pi);
-            }
+            
             if (PackageModels == null)
             {
                 PackageModels = new Dictionary<string, PackageInfoModel>();
