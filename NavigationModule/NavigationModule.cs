@@ -22,7 +22,8 @@ namespace NavigationModule
             regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationSIXManagedView));
             regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationQAView));
             regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationATMView));
-            regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationHSMKMView));
+            regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationHSMKMView)); 
+            regionManager.RegisterViewWithRegion("NavigationRegion", typeof(NavigationHSMTreeView));
         }
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
@@ -38,6 +39,7 @@ namespace NavigationModule
             containerRegistry.Register<NavigationMANUView>();
             containerRegistry.Register<NavigationSIXManagedView>();
             containerRegistry.Register<NavigationHSMKMView>();
+            containerRegistry.Register<NavigationHSMTreeView>();
         }
         
 

@@ -17,13 +17,14 @@
             <TextBlock Text="{Binding KeyGenTitle}" Style="{DynamicResource Title}"/>
             <Border Style="{DynamicResource ToolbarBoder}" >
                 <StackPanel Orientation="Horizontal" Margin="5">
-                    <Button Content="CREATE CA CERT"  Command="{Binding Path=CreateCACertificateCommand}" IsEnabled="{Binding CreateCACertEnabled}"/>
+                    <!--<Button Content="CREATE ATM CA-TEST CERT"  Command="{Binding Path=CreateCACertificateCommand}" IsEnabled="{Binding CreateCACertEnabled}"/>-->
                     <Separator Style="{DynamicResource SeperatorStyle}" />
                     <Button Content="CREATE QA CERT"  Command="{Binding Path=CreateQACertificateCommand}" IsEnabled="{Binding CreateQACertEnabled}"/>
                     <Separator Style="{DynamicResource SeperatorStyle}"/>
-                    <Button Width="130" Content="CREATE ATM CERT" Command="{Binding Path=CreateATMCertificateCommand}" IsEnabled="{Binding CreateATMCertEnabled}"/>
+                    <!--<Button  Content="CREATE ATM SIG-TEST CERT" Command="{Binding Path=CreateATMCertificateCommand}" IsEnabled="{Binding CreateATMCertEnabled}"/>-->
+                    <Button  Content="EXPORT QA CERT" Command="{Binding Path=ExportQACertificateCommand}" />
                     <Separator Style="{DynamicResource SeperatorStyle}"/>
-                    <Button Content="SIGN REQUEST" Command="{Binding Path=SignManuCertRequestCommand}" />
+                    <Button Content="SIGN MANU CERT REQUEST" Command="{Binding Path=SignManuCertRequestCommand}" />
                 </StackPanel>
             </Border>
 

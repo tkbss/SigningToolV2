@@ -8,7 +8,24 @@ namespace Infrastructure.Certificates
     public class SignerCertificateMapping
     {
         
-        
+        public System.Security.Cryptography.X509Certificates.X509Certificate GetCertifiedManufacturer(string manufacturer) 
+        {
+            KeyStoreHandling ks = new KeyStoreHandling();
+            string manu=manufacturer.Split('-')[0];
+            string env = manufacturer.Split('-')[1];
+            string p = ks.CertifiedPath(MANUFACTURER.SIX, Converter.Env(env), STORETYPE.KMS);
+            string fn = Path.Combine(p, ManuCertificateName(manu, env));
+            if (File.Exists(fn) == false)
+            {                
+                    return null;
+            }
+            FileStream rs = new FileStream(fn, FileMode.Open);
+            X509CertificateParser p1 = new X509CertificateParser();
+            X509Certificate c = p1.ReadCertificate(rs);
+            rs.Close();
+            System.Security.Cryptography.X509Certificates.X509Certificate cert = Org.BouncyCastle.Security.DotNetUtilities.ToX509Certificate(c);
+            return cert;
+        }
         public List<string> CertifiedManufactures(STORETYPE st)
         {
             List<string> cert_manu_list = new List<string>();                               
@@ -29,6 +46,7 @@ namespace Infrastructure.Certificates
                 }                
             }
             env = Converter.Env(ENVIROMENT.PROD);
+            ps = ks.CertifiedPath(MANUFACTURER.SIX, ENVIROMENT.PROD, manu_st);
             foreach (MANUFACTURER m in Converter.Manufactures)
             {
                 string manu = Converter.Manu(m);
@@ -49,15 +67,14 @@ namespace Infrastructure.Certificates
             if (cert == null)
                 return string.Empty;
             X509Certificate c = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert);
-            SIXCertificateManagement c_m = new SIXCertificateManagement();
-            string tb = c_m.Thumbprint(c);
-            string r = SignerIsManu(ENVIROMENT.TEST, tb);
+            
+            string r = SignerIsManu(ENVIROMENT.TEST, c);
             if (string.IsNullOrEmpty(r) == false)
             {
                 s = SIGNER.MANU;
                 return r;
             }
-            r= SignerIsManu(ENVIROMENT.PROD, tb);
+            r= SignerIsManu(ENVIROMENT.PROD, c);
             if (string.IsNullOrEmpty(r) == false)
             {
                 s = SIGNER.MANU;
@@ -87,24 +104,20 @@ namespace Infrastructure.Certificates
             else
                 return string.Empty;
         }
-        private string SignerIsManu(ENVIROMENT e,string tb)
+        private string SignerIsManu(ENVIROMENT e, X509Certificate c)
         {
             STORETYPE st;
             string env =Converter.Env(e);
-            st=STORETYPE.KMS;
-            //if (e == ENVIROMENT.TEST)
-            //    st = STORETYPE.UNMANAGED;
-            //else
-            //    st = STORETYPE.KMS;
+            st=STORETYPE.KMS;            
             string signer = string.Empty;
             KeyStoreHandling ks = new KeyStoreHandling();
-            string ps = ks.CertifiedPath(MANUFACTURER.SIX, ENVIROMENT.TEST, st);
+            string ps = ks.CertifiedPath(MANUFACTURER.SIX, e, st);
             foreach (MANUFACTURER m in Converter.Manufactures)
             {
                 string manu = Converter.Manu(m);
                 string mcn = ManuCertificateName(manu, env);
                 string fns = Path.Combine(ps, mcn);
-                if (IsMatchingCert(tb, fns) == true)
+                if (IsMatchingCert(c.IssuerDN.ToString(),c.SubjectDN.ToString(), fns) == true)
                     signer= manu + "-" + env;
             }
             return signer;
@@ -126,7 +139,7 @@ namespace Infrastructure.Certificates
             bool r = kd.Equals(pk);
             return r;
         }
-        private bool IsMatchingCert(string tb, string fn)
+        private bool IsMatchingCert(string i,string s, string fn)
         {
             if (File.Exists(fn) == false)
                 return false;            
@@ -134,9 +147,7 @@ namespace Infrastructure.Certificates
             X509CertificateParser p = new X509CertificateParser();
             X509Certificate c = p.ReadCertificate(rs);
             rs.Close();
-            SIXCertificateManagement c_m = new SIXCertificateManagement();
-            string mc_tb = c_m.Thumbprint(c);
-            if (mc_tb == tb)
+            if ( i==c.IssuerDN.ToString() && s == c.SubjectDN.ToString())        
                 return true;
             else
                 return false;

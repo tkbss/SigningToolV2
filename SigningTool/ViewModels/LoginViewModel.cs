@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows.Input;
 using Infrastructure.Pkcs11wrapper;
+using Net.Pkcs11Interop.Common;
 
 namespace SigningTool.ViewModels
 {
@@ -63,8 +64,15 @@ namespace SigningTool.ViewModels
             _status = _container.Resolve<LoginStatusBarViewModel>();
             _status.Error("APPLICATION START", "HSM initialzation still in progress");
             IsOperationInProgress=true;
-            HSMConnectionText ="Connection to HSM still in progress";    
-            HSMIP = cfg.AccessKey("CK_HSM_IP_ADR");                      
+            HSMConnectionText ="Connection to HSM still in progress";
+            HSMIP = cfg.ReadRegistry(@"SOFTWARE\SafeNet\HSM\NETCLIENT", "ET_HSM_NETCLIENT_SERVERLIST");
+            if (string.IsNullOrEmpty(HSMIP) == true) 
+            {
+                HSMIP = "hsmt02";
+                cfg.SetRegistry(@"SOFTWARE\SafeNet\PTKC\GENERAL", "ET_PTKC_GENERAL_LIBRARY_MODE", "NORMAL");                
+                cfg.SetRegistry(@"SOFTWARE\SafeNet\HSM\NETCLIENT", "ET_HSM_NETCLIENT_SERVERLIST", HSMIP);
+            }
+                
             try
             {
                 LastName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;

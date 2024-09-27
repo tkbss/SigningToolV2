@@ -231,7 +231,9 @@ namespace SoftwareSigning.ViewModels
             SecurityProcessingModel sp = new SecurityProcessingModel();
             if (string.IsNullOrEmpty(SelectedVersion))
             {
-                sbvm.Success("PACKAGE SIGNING", "No Packet selected for signing");
+                SecurityProcessingModel spm = new SecurityProcessingModel();
+                spm.PackageParsingError(_container);
+                sbvm.Success("PACKAGE SIGNING", "No Packet selected or dropped for signing");
                 return;
             }
             if(LoadPackageInfo()==false)
@@ -323,13 +325,7 @@ namespace SoftwareSigning.ViewModels
             return true;
             
         }
-        //public void DetermineSigningStatus()
-        //{
-        //    ExportSignatureExists = "False";
-        //    SecurityProcessingModel sp = new SecurityProcessingModel();
-        //    sp.PackageSigningStatus(this, _container);
-        //    sp.ATMSigningStatus(this, _container);
-        //}
+        
         private void OnShowSignerCertificate()
         {
             if (SigningCertificate == null)

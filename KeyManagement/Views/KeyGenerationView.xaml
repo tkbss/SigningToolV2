@@ -99,9 +99,27 @@
                     <TextBox Grid.Row="1" Grid.Column="1"  Text="{Binding NewManuStorePwd}"  Margin="0,5,5,5" />
                 </Grid>
             </GroupBox>
-            <GroupBox Header="CERTIFIED MANUFACTURER" Grid.Row="3" Grid.ColumnSpan="2" Style="{DynamicResource GroupBoxStyle}" Visibility="{Binding Path=CertifiedManufacturers}">
+            <!--<GroupBox Header="CERTIFIED MANUFACTURER" Grid.Row="3" Grid.ColumnSpan="2" Style="{DynamicResource GroupBoxStyle}" Visibility="{Binding Path=CertifiedManufacturers}">
                 <Grid>
                     <ListBox ScrollViewer.CanContentScroll="True" Margin="5" ItemsSource="{Binding Path=CertifiedManufactures}"/>
+                </Grid>
+            </GroupBox>-->
+            <GroupBox Grid.Row="3" Header="CERTIFIED MANUFACTURER" Grid.ColumnSpan="2" Style="{DynamicResource GroupBoxStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="150"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox ItemsSource="{Binding Path=CertifiedManufactures}" SelectedItem="{Binding Path=CertificateStatus.SelectedCertifiedManu}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding}" Margin="2,0,0,0" VerticalAlignment="Center" Width="200"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Content="SHOW" Margin="3" Grid.Column="1" Command="{Binding Path=CertificateStatus.ShowCertifiedManuCertCommand}" Width="100" Height="30"/>
                 </Grid>
             </GroupBox>
             <GroupBox Header="EXISTING KEYS" Grid.Row="4" Grid.ColumnSpan="2"  Style="{DynamicResource GroupBoxStyle}">

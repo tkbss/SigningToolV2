@@ -1,5 +1,6 @@
 ﻿using infrastructure.security.provider;
 using Infrastructure.Exceptions;
+using Microsoft.Xaml.Behaviors.Media;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.X509;
 using System;
@@ -190,12 +191,27 @@ namespace Infrastructure
             StoreManuCertificate(manu_cert);
             return cert_path;
         }
+        public string[] ParseManufacturerFromCert(string cp) 
+        {
+            FileStream rs = new FileStream(cp, FileMode.Open);
+            X509CertificateParser p = new X509CertificateParser();
+            X509Certificate c = p.ReadCertificate(rs);
+            rs.Close();
+            int index = c.SubjectDN.ToString().IndexOf("CN=");
+            string dn=c.SubjectDN.ToString().Substring(index+3);
+            string[] cn=dn.Split(new char[] { '_' });
+            return cn;
+        }
         public void ImportCertifiedManufacturer(string certPath,STORETYPE st,ENVIROMENT e) 
         {
-            string p = keystore.CertifiedPath(MANUFACTURER.SIX, e, st);
-            string cn = Path.GetFileName(certPath);
-            string destination=Path.Combine(p, cn);
-            File.Copy(certPath, destination,true);   
+            string prod = keystore.CertifiedPath(MANUFACTURER.SIX, ENVIROMENT.PROD, st);
+            string test = keystore.CertifiedPath(MANUFACTURER.SIX, ENVIROMENT.TEST, st);
+            string[] manu = ParseManufacturerFromCert(certPath);
+            string cn = CertificateName(manu[0].ToUpper(), manu[1].ToUpper());
+            string destination=Path.Combine(prod, cn);
+            File.Copy(certPath, destination,true);
+            destination = Path.Combine(test, cn);
+            File.Copy(certPath, destination, true);
         }
         private void StoreSIXCertificate(X509Certificate c,CERTTYPE ct,ENVIROMENT e)
         {

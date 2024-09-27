@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Infrastructure
 {
@@ -77,11 +78,12 @@ namespace Infrastructure
                 if (!string.IsNullOrEmpty(exeConfigPath))
                 {
                     config = ConfigurationManager.OpenExeConfiguration(exeConfigPath);
+                    
                 }
             }
             catch
             {
-                //handle error here.. means DLL has no satellite configuration file.
+                
             }
             ATM_TEST.Add(CK_ATM_TEST_CA_PUBL_KEY);
             ATM_TEST.Add(CK_ATM_TEST_CA_PRIV_KEY);

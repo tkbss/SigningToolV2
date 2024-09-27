@@ -8,6 +8,9 @@
     <Compile Update="Views\NavigationHSMKMView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\NavigationHSMTreeView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\NavigationQAView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -20,6 +23,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\NavigationHSMKMView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\NavigationHSMTreeView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\NavigationQAView.xaml">

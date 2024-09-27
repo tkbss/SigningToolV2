@@ -6,7 +6,7 @@
         xmlns:prism="http://prismlibrary.com/"
         xmlns:local="clr-namespace:SigningTool"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1000" Width="1100">
+        Title="ATM SOFTWARE SIGNING" Height="1000" Width="1100">
     <Window.Background>
         <ImageBrush ImageSource="/SIX-Background.png"/>
     </Window.Background>

@@ -31,7 +31,7 @@ namespace SoftwareSigning.Model
         }
         public PackageInfoModel(PackageInfo pi)
         {
-            Vendor = pi.Vendor;
+            Vendor = Converter.Vendor(pi.Vendor);
             Version = pi.Version;
             Name = pi.Name;
             ExtractionPath = pi.ExtractionPath;

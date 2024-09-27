@@ -32,6 +32,15 @@ namespace SigningKeyManagment.ViewModels
         public ICommand ShowSigningCertificateATMMANUCommand { get; private set; }
         public string Manufacturer { get; set; }
         DNSNameModel dns_name = new DNSNameModel();
+        HSMCertStatusModel cert_status = new HSMCertStatusModel();
+        public HSMCertStatusModel CertificateStatus
+        {
+            get
+            {
+                return cert_status;
+            }
+
+        }
         public DNSNameModel DNSName
         {
             get
@@ -247,7 +256,8 @@ namespace SigningKeyManagment.ViewModels
             
             SetExpiry();
             LoadCertifiedManufacturer();
-
+            SIXSoftwareSigningStatusBarViewModel status_bar = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            status_bar.Success("KEYMANAGEMENT", "Certificate management for QA signing keys");
         }
         public void LoadCertifiedManufacturer() 
         {

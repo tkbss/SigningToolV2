@@ -38,3 +38,5 @@ C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\Na
 C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationHSMKMView.baml
 C:\projects\GIT\SigningToolV2\NavigationModule\bin\Debug\net8.0-windows\KeyManagement.dll
 C:\projects\GIT\SigningToolV2\NavigationModule\bin\Debug\net8.0-windows\KeyManagement.pdb
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationHSMTreeView.g.cs
+C:\projects\GIT\SigningToolV2\NavigationModule\obj\Debug\net8.0-windows\Views\NavigationHSMTreeView.baml

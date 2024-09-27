@@ -127,7 +127,7 @@ namespace Infrastructure
                 string moveFile = Directory.GetFiles(f_p).FirstOrDefault(p => Path.GetExtension(p) == ".tmp");
                 if (moveFile != null)
                 {
-                    string targetP = Path.GetFileNameWithoutExtension(moveFile);
+                    string targetP = Path.Combine(f_p,Path.GetFileNameWithoutExtension(moveFile));
                     File.Move(moveFile, targetP, true);
                 }
             }

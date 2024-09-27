@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 
-8682859804
+9534797925
 
-12-1839192453
-215836664189
-NavigationResources.xaml;Views\NavigationATMView.xaml;Views\NavigationEmptyView.xaml;Views\NavigationHSMKMView.xaml;Views\NavigationMANUView.xaml;Views\NavigationQAView.xaml;Views\NavigationSIXManagedView.xaml;Views\NavigationSIXQAView.xaml;
+13-1998099857
+215915527489
+NavigationResources.xaml;Views\NavigationATMView.xaml;Views\NavigationEmptyView.xaml;Views\NavigationHSMKMView.xaml;Views\NavigationHSMTreeView.xaml;Views\NavigationMANUView.xaml;Views\NavigationQAView.xaml;Views\NavigationSIXManagedView.xaml;Views\NavigationSIXQAView.xaml;
 
 False
 

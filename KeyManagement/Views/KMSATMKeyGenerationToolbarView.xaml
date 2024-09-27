@@ -24,7 +24,9 @@
                     <Button Content="CREATE ATM CERT" Command="{Binding Path=CreateATMCertificateCommand}" IsEnabled="{Binding CreateATMCertEnabled}"/>
                     
                     <Separator Style="{DynamicResource SeperatorStyle}"/>
-                    <Button  Content="EXPORT CA" Command="{Binding Path=ExportCACertificateCommand}" />
+                    <Button  Content="EXPORT QA CERT" Command="{Binding Path=ExportQACertificateCommand}" />
+                    <Separator Style="{DynamicResource SeperatorStyle}"/>
+                    <Button  Content="EXPORT CA CERT" Command="{Binding Path=ExportCACertificateCommand}" />
                 </StackPanel>
             </Border>
 

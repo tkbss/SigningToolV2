@@ -27,7 +27,7 @@ namespace SigningKeyManagment.ViewModels
         Infrastructure.HSM.HSM hsm;
         string enviroment;
         string password_enter;
-        
+        public ICommand ManuKeyGeneratorEnabledCommand { get; private set; }
         public string Enviroment
         {
             get { return enviroment; }
@@ -103,16 +103,53 @@ namespace SigningKeyManagment.ViewModels
             }
 
         }
+        bool chk_abort;
+        public bool ChkAbort
+        {
+            get { return chk_abort; }
+            set
+            {
+                SetProperty(ref chk_abort, value);
+            }
+        }
         public HSMStatusViewModel(IUnityContainer container)
         {
             _container = container;
             hsm=_container.Resolve<Infrastructure.HSM.HSM>();
             this.CheckPwdCommand = new DelegateCommand(this.OnCheckPwd);
             PasswordStatus = new SolidColorBrush(Colors.Red);
+            ManuKeyGeneratorEnabledCommand = new DelegateCommand(OnManuKeyGeneratorEnabled);
+            ChkAbort = true;
         }
+        private void OnManuKeyGeneratorEnabled()
+        {
+            KMSKeyGenerationToolbarViewModel toolbar = _container.Resolve<KMSKeyGenerationToolbarViewModel>();
+            if (ChkAbort == true)
+            {
+                if (CertificateStatus.CAKeyStatus == KEYStoreStatus.CREATED)
+                    toolbar.CreateCACertEnabled = false;
+                else
+                    toolbar.CreateCACertEnabled = true;
+                if (CertificateStatus.ATMKeyStatus == KEYStoreStatus.CREATED)
+                    toolbar.CreateATMCertEnabled = false;
+                else
+                    toolbar.CreateATMCertEnabled = true;
+                if (CertificateStatus.QAKeyStatus == KEYStoreStatus.CREATED)
+                    toolbar.CreateQACertEnabled = false;
+                else
+                    toolbar.CreateQACertEnabled = true;
+            }
+            else
+            {
+                toolbar.CreateCACertEnabled = true;
+                toolbar.CreateATMCertEnabled = true;
+                toolbar.CreateQACertEnabled = true;
+            }
+        }        
         public void OnCheckPwd()
         {
             SIXSoftwareSigningStatusBarViewModel status_bar = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            ManuKeyGeneratorEnabledCommand = new DelegateCommand(this.OnManuKeyGeneratorEnabled);
             if (hsm.CheckPassword(PasswordEnter, enviroment) == false)
             {
                 PasswordStatus = new SolidColorBrush(Colors.Red);                
@@ -141,7 +178,7 @@ namespace SigningKeyManagment.ViewModels
         {
             enviroment = (string)navigationContext.Parameters["ENV"];
             string Origin = (string)navigationContext.Parameters["MANU"];            
-            SetToolbarTitle(Origin + " HSM AND CERTIFICATE STATUS");
+            SetToolbarTitle(Origin +"-"+ enviroment + " HSM KEY AND CERTIFICATE STATUS");
             hsm_status.Clear();
             foreach (HSMStatusInfo i in hsm.HSMStatus(enviroment))
             {
@@ -151,6 +188,8 @@ namespace SigningKeyManagment.ViewModels
             SetUpCertStatus();
             SignerCertificateMapping cm = _container.Resolve<SignerCertificateMapping>();
             CertifiedManufactures = new ObservableCollection<string>(cm.CertifiedManufactures(STORETYPE.KMS));
+            SIXSoftwareSigningStatusBarViewModel status_bar = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            status_bar.Success("KEYMANAGEMENT", "Certificate management for ATM signing keys for ENVIROMENT: "+enviroment);
         }
         private void SetToolbarTitle(string title)
         {

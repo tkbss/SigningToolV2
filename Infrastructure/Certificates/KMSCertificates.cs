@@ -21,6 +21,19 @@ namespace Infrastructure.Certificates
                 throw new FileNotFoundException("CA certificate file not found");          
 
         }
+        public void ExportQACertificate(string target_fn)
+        {
+            ENVIROMENT e=ENVIROMENT.TEST;   
+            KeyStoreHandling ksh = new KeyStoreHandling();
+            string sn = ksh.StoreName(MANUFACTURER.SIX, e, STORETYPE.KMS, CERTTYPE.QA);
+            string store_path = ksh.StorePath(MANUFACTURER.SIX, e, STORETYPE.KMS);
+            string fp = Path.Combine(store_path, sn + ".cer");
+            if (File.Exists(fp))
+                File.Copy(fp, target_fn);
+            else
+                throw new FileNotFoundException("QA certificate file not found");
+
+        }
         public void CreateCACertificate(ENVIROMENT e,Infrastructure.HSM.HSM hsm)
         {
             string cert_type = "CA";
@@ -139,7 +152,7 @@ namespace Infrastructure.Certificates
             string fp = Path.Combine(sp, sn + ".cer");
             if (File.Exists(fp) == false)
                 return DateTime.MinValue;
-            return File.GetCreationTime(fp);
+            return File.GetLastWriteTime(fp);
         }
         public X509Certificate GetBCCertificate(ENVIROMENT e, CERTTYPE ct)
         {

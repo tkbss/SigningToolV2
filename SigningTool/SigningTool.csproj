@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>digital_sig.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,6 +19,10 @@
 
   <ItemGroup>
     <None Remove="SIX-Background.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="digital_sig.ico" />
   </ItemGroup>
 
   <ItemGroup>

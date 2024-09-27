@@ -1,6 +1,8 @@
 ﻿using Infrastructure;
+using Infrastructure.Certificates;
 using Prism.Commands;
 using Prism.Mvvm;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 
@@ -18,6 +20,18 @@ namespace SigningKeyManagment.Models
             set
             {
                 SetProperty(ref ca_cert_status, value);
+            }
+        }
+        string _selectedCertifiedManu;
+        public string SelectedCertifiedManu
+        {
+            get
+            {
+                return _selectedCertifiedManu;
+            }
+            set
+            {
+                SetProperty(ref _selectedCertifiedManu, value);
             }
         }
         string ca_key_status;
@@ -196,7 +210,8 @@ namespace SigningKeyManagment.Models
         {
             this.ShowCACertificateCommand = new DelegateCommand(this.OnShowCACertificate);
             this.ShowSigningCertificateQACommand = new DelegateCommand(this.OnShowQACertificate);
-            this.ShowSigningCertificateATMMANUCommand = new DelegateCommand(this.OnShowATMCertificate);            
+            this.ShowSigningCertificateATMMANUCommand = new DelegateCommand(this.OnShowATMCertificate);
+            ShowCertifiedManuCertCommand = new DelegateCommand(OnShowCertifiedManuCert);
         }
 
 
@@ -220,6 +235,20 @@ namespace SigningKeyManagment.Models
             System.Security.Cryptography.X509Certificates.X509Certificate2 c = new System.Security.Cryptography.X509Certificates.X509Certificate2(ATMCert);
             IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
             System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(c, handle);
+        }
+        public ICommand ShowCertifiedManuCertCommand { get; private set; }
+        private void OnShowCertifiedManuCert() 
+        {
+            string manu=SelectedCertifiedManu;
+            SignerCertificateMapping cm = new SignerCertificateMapping();
+            var c= cm.GetCertifiedManufacturer(manu);
+            if (c == null)
+                return;
+            var CertifiedManufacture = new System.Security.Cryptography.X509Certificates.X509Certificate2(c); 
+            if(CertifiedManufacture == null)
+                return; 
+            IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
+            System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(CertifiedManufacture, handle);
         }
     }
 }

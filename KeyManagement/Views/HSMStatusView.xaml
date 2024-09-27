@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SigningKeyManagment.Views"
-             >
+             xmlns:local="clr-namespace:SigningKeyManagment.Views" xmlns:i="http://schemas.microsoft.com/xaml/behaviors">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -50,16 +49,17 @@
                     <TextBlock Text="{Binding Path=KeyType}"  Width="50" Height="20" Style="{DynamicResource DataStyle}"/>
                     <TextBlock Text="STATUS:" Style="{DynamicResource LabelStyle}"/>
                     <TextBlock Text="{Binding Path=KeyStatus}" Width="100" Height="20" Style="{DynamicResource DataStyle}"/>
-            </StackPanel>
+                </StackPanel>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <Grid.RowDefinitions>            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <GroupBox Grid.Row="0" Header="HSM KEY STATUS" Style="{DynamicResource GroupBoxStyle}" >
@@ -73,15 +73,15 @@
                     <ListBox ItemsSource="{Binding Path=QAKeys}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}" />
                 </GroupBox>
                 <GroupBox Grid.Row="1" Header="SIGNING KEYS">
-                    <ListBox ItemsSource="{Binding Path=SigningKeys}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}"/>          
+                    <ListBox ItemsSource="{Binding Path=SigningKeys}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}"/>
                 </GroupBox>
                 <GroupBox Grid.Row="2" Header="CA KEYS">
-                    <ListBox ItemsSource="{Binding Path=CAKeys}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}"/> 
+                    <ListBox ItemsSource="{Binding Path=CAKeys}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}"/>
                 </GroupBox>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Row="1"  Header="KMS CERTIFICATES" Style="{DynamicResource GroupBoxStyle}">
-          <Grid>
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto"/>
@@ -104,35 +104,59 @@
                 <TextBlock Text="ATM Certificate" Grid.Row="2" Grid.Column="0" Style="{DynamicResource VCenterGroupBoxTextBlock}" Margin="0,0,0,3" />
                 <TextBlock Text="{Binding Path=CertificateStatus.ATMKeyStatus}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,3" VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Path=CertificateStatus.ATMKeyCreation}" Grid.Row="2" Grid.Column="2" Style="{DynamicResource VCenterGroupBoxTextBlock}" Margin="0,0,3.5,3" />
-                <Button Grid.Row="2" Grid.Column="3" Content="SHOW" Margin="3" Command="{Binding Path=CertificateStatus.ShowSigningCertificateATMMANUCommand }" IsEnabled="{Binding Path=CertificateStatus.ShowSigningATMMANU}"/>                
+                <Button Grid.Row="2" Grid.Column="3" Content="SHOW" Margin="3" Command="{Binding Path=CertificateStatus.ShowSigningCertificateATMMANUCommand }" IsEnabled="{Binding Path=CertificateStatus.ShowSigningATMMANU}"/>
             </Grid>
-            
+
             <!--<ListBox ItemsSource="{Binding Path=CertificateStatus}" ItemTemplate="{DynamicResource ListBoxKeyTemplate}" Style="{DynamicResource LBFont}"/>-->
         </GroupBox>
-        <GroupBox Grid.Row="2" Header="HSM IP CONFIGURATION" Style="{DynamicResource GroupBoxStyle}">
+        
+        <GroupBox Grid.Row="2" Header="CERTIFIED MANUFACTURER" Style="{DynamicResource GroupBoxStyle}">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition />                    
-                </Grid.RowDefinitions>
-                <ListBox Grid.Row="0" ItemsSource="{Binding Path=HSMStatus}" Style="{DynamicResource LBFont}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="ADR:" Style="{DynamicResource LabelStyle}"/>
-                                <TextBlock Text="{Binding Path=IPAdr}" Margin="2,0,0,0" Width="100"/>
-                                <TextBlock Text="STATUS:" Margin="5,0,0,0" Style="{DynamicResource LabelStyle}"/>
-                                <TextBlock Text="{Binding Path=Connection}" Margin="2,0,0,0" Width="100"/>
-                                <TextBlock Text="SLOT:" Margin="5,0,0,0" Style="{DynamicResource LabelStyle}"/>
-                                <TextBlock Text="{Binding Path=Slot}" Margin="2,0,0,0" Width="100"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>             
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+            <ListBox ItemsSource="{Binding Path=CertifiedManufactures}" SelectedItem="{Binding Path=CertificateStatus.SelectedCertifiedManu}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">                            
+                            <TextBlock Text="{Binding}" Margin="2,0,0,0" VerticalAlignment="Center" Width="200"/>                            
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Content="SHOW" Margin="3" Grid.Column="1" Command="{Binding Path=CertificateStatus.ShowCertifiedManuCertCommand}" Width="100" Height="30"/>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Row="3" Header="CERTIFIED MANUFACTURER" Style="{DynamicResource GroupBoxStyle}">
-            <ListBox ItemsSource="{Binding Path=CertifiedManufactures}"/>
+        <GroupBox Header="EXISTING KEYS" Grid.Row="3" Grid.ColumnSpan="2"  Style="{DynamicResource GroupBoxStyle}">
+            <Grid  Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <RadioButton Grid.Row="0" Grid.Column="0" Content="OVERRIDE" IsChecked="{Binding ChkOverride, Mode=TwoWay}"  >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:InvokeCommandAction Command="{Binding Path=ManuKeyGeneratorEnabledCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton Grid.Row="1" Grid.Column="0" Content="BACKUP" IsChecked="{Binding ChkBackup, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:InvokeCommandAction Command="{Binding Path=ManuKeyGeneratorEnabledCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton Grid.Row="2" Grid.Column="0" Content="ABORT" IsChecked="{Binding ChkAbort, Mode=TwoWay}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Checked">
+                            <i:InvokeCommandAction Command="{Binding Path=ManuKeyGeneratorEnabledCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </RadioButton>
+            </Grid>
         </GroupBox>
-
     </Grid>
 </UserControl>

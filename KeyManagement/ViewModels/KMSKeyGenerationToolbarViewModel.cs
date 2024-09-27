@@ -21,6 +21,7 @@ namespace SigningKeyManagment.ViewModels
         public ICommand CreateATMCertificateCommand { get; private set; }
         public ICommand SignManuCertRequestCommand { get;  private set; }
         public ICommand ExportCACertificateCommand { get; private set; }
+        public ICommand ExportQACertificateCommand { get; private set; }
         public KMSKeyGenerationToolbarViewModel(IUnityContainer container)
         {
             _container = container;
@@ -30,6 +31,7 @@ namespace SigningKeyManagment.ViewModels
             this.CreateATMCertificateCommand = new DelegateCommand(this.OnCreateATMCert);
             this.SignManuCertRequestCommand =new DelegateCommand(this.OnSignManuCertRequest);
             this.ExportCACertificateCommand = new DelegateCommand(this.OnExportCACertificate);
+            this.ExportQACertificateCommand = new DelegateCommand(this.OnExportQACertificate);
         }
         
         string key_gen_title;
@@ -121,11 +123,50 @@ namespace SigningKeyManagment.ViewModels
             certificate = Path.GetFileName(certificate);
             status.Success("SIGN PKCS10 REQUEST", "Request signed successfull as : " + certificate);
         }
+        private void OnExportQACertificate()
+        {
+            var kgvm = _container.Resolve<KeyGenerationViewModel>();
+            SIXSoftwareSigningStatusBarViewModel status = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            string fn = "SIX_QA_" + "_CERTIFICATE.cer";
+            if (string.IsNullOrEmpty(kgvm.CertExportDir) == true)
+            {
+                SaveFileDialog dialog = new SaveFileDialog();
+                dialog.Filter = "Certificate (*.cer)|*.cer|All files (*.*)|*.*";
+                dialog.FileName = fn;
+                if (dialog.ShowDialog() == false)
+                {
+                    status.Error("EXPORT CA CERTIFICAT", "No CA Certificate file path selected");
+                    return;
+                }
+
+                fn = dialog.FileName;
+            }
+            else
+            {
+                fn = kgvm.CertExportDir + "\\" + fn;
+            }
+
+
+            try
+            {
+                if (File.Exists(fn) == true)
+                {
+                    File.Delete(fn);
+                }
+                KMSCertificates ch = new KMSCertificates();
+                ch.ExportQACertificate(fn);
+                status.Success("EXPORT QA CERTIFICATE", "QA certificate successfull exported: " + fn);
+            }
+            catch
+            {
+                status.Error("EXPORT QA CERTIFICATE", "General error during QA certificate export occurred");
+            }
+        }
         private void OnExportCACertificate()
         {
             var kgvm = _container.Resolve<KeyGenerationViewModel>();
             SIXSoftwareSigningStatusBarViewModel status = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
-            string fn = "SIX_CA_" + kgvm.Enviroment.ToUpper() + "_CERTIFICATE.cer"; 
+            string fn = "SIX_CA_" + viewdata.Enviroment.ToUpper() + "_CERTIFICATE.cer"; 
             if (string.IsNullOrEmpty(kgvm.CertExportDir) == true)
             {
                 SaveFileDialog dialog = new SaveFileDialog();

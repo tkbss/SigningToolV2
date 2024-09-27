@@ -42,7 +42,7 @@
             <Button Grid.Row="2" Content="KEY GENERATION" Command="{Binding KeyGenerationCommand}" Width="120" 
                     Visibility="{Binding Path=KGVisibility}" Margin="5"/>
             <Button Grid.Row="3" Content="IMPORT PACKAGE" Command="{Binding ImportPackageCommand}" Width="120" Margin="5" />
-            <Button Grid.Row="4" Content="OPERATION TRACE" Command="{Binding ShowTraceCommand}" Width="120" Margin="5"/>
+            <!--<Button Grid.Row="4" Content="OPERATION TRACE" Command="{Binding ShowTraceCommand}" Width="120" Margin="5"/>-->
                 <GroupBox Grid.Row="5"  Header="SOFTWARE SIGNING" Margin="5"  FontFamily="Arial" FontSize="18" FontWeight="Bold">
                     <Grid>
                         <Grid.RowDefinitions>

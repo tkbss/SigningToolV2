@@ -9,6 +9,7 @@ using System.IO;
 using System.Windows.Input;
 using Unity;
 using System.Windows;
+using NavigationModule.Models;
 
 namespace SoftwareSigning.ViewModels
 {
@@ -193,7 +194,12 @@ namespace SoftwareSigning.ViewModels
             PackageDropModel pdm = _container.Resolve<PackageDropModel>();
             try
             {               
-
+                if(string.IsNullOrEmpty(signingview.PackageName) || string.IsNullOrEmpty(signingview.SelectedVersion))
+                {
+                    sbvm.Error("EXPORT PACKAGE", "No package selected. Export operation aborted.");
+                    IsOperationInProgress = false;
+                    return;
+                }
                 SIGNER s = Converter.Signer(signingview.SignerType);
                 MANUFACTURER m = Converter.Manu(signingview.PackageProvider);
                 ENVIROMENT e = Converter.Env(signingview.Enviroment);
@@ -276,7 +282,7 @@ namespace SoftwareSigning.ViewModels
             sbvm.Success("PACKAGE SIGNING", "Start signing process.");
             UnmanagedCertificates uc = _container.Resolve<UnmanagedCertificates>();
             PackageProcessing pp = _container.Resolve<PackageProcessing>();
-            //var navi=_container.Resolve<NavigationViewModel>();
+            
             ErrorMessage = string.Empty;
 
             string[] manu_ct = Converter.SplitManuCertype(signing.Origin);
@@ -371,6 +377,11 @@ namespace SoftwareSigning.ViewModels
                 {
                     navigate.Navigate(2);
                 }                
+            }
+            var mpm = _container.Resolve<PackageManagementModel>();
+            if(mpm.SeletectedItem == null)
+            {
+                mpm.SeletectedItem = new PackageModel() { IsSelected=true, Manu= signing.PackageProvider, PackageName=pi.Name, Version=pi.Version };
             }
             IsOperationInProgress = false;
 

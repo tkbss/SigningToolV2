@@ -31,6 +31,7 @@ namespace NavigationModule.ViewModels
         public ICommand ShowTraceCommand { get; private set; }       
 
         public ICommand HSMStatusCommand{get;set;}
+        public ICommand TreeNavigationCommand { get; set; }
         public PackageModel SelectedItem { get; set; }
         PackageManagementModel mpm;
         public PackageManagementModel ManufacturerPackageManagement
@@ -96,6 +97,7 @@ namespace NavigationModule.ViewModels
             QANavigationCommand = new DelegateCommand(OnQANavigation);
             NavigationATMTestCommand = new DelegateCommand(OnATMTestNavigation);
             NavigationATMPRODCommand = new DelegateCommand(OnATMProdNavigation);
+            TreeNavigationCommand = new DelegateCommand(OnPackageTree);
 
 
 
@@ -223,17 +225,30 @@ namespace NavigationModule.ViewModels
             _manager.RequestNavigate("StatusRegion", NavigationURI.SIXSoftwareSigningStatusBarView);
             await vm.OnImportPackage();         
         }
+        public void OnPackageTree() 
+        {
+            NavigationParameters parameters = MakeParameters(string.Empty, string.Empty, enviroment, string.Empty);
+            parameters.Add("MANAGED", "KMS");
+            parameters.Add("MANU", signer);
+            _manager.RequestNavigate("NavigationRegion", new Uri("NavigationSIXManagedView", UriKind.Relative), parameters);
+            _manager.RequestNavigate("MainRegion", NavigationURI.SIXsigningViewUri, parameters);
+        }
         public void OnHSMStatus()
         {
             
             NavigationParameters parameters = MakeParameters(string.Empty, string.Empty, enviroment, string.Empty);
             parameters.Add("MANAGED", "KMS");
-            parameters.Add("MANU", signer);
-            _manager.RequestNavigate("MainRegion", new Uri("HSMStatusView", UriKind.Relative), parameters);
-            if (signer == "SIX-QA")
+            parameters.Add("MANU", signer);          
+            _manager.RequestNavigate("NavigationRegion", new Uri("NavigationHSMTreeView", UriKind.Relative), parameters);            
+            if (signer == "SIX-QA") {
+                _manager.RequestNavigate("MainRegion", new Uri("KeyGenerationView", UriKind.Relative), parameters);
                 _manager.RequestNavigate("ToolbarRegion", NavigationURI.KMSQAKeyGenerationToolbarViewUri);
+            }
             if (signer == "SIX-ATM")
+            {
+                _manager.RequestNavigate("MainRegion", new Uri("HSMStatusView", UriKind.Relative), parameters);
                 _manager.RequestNavigate("ToolbarRegion", NavigationURI.KMSATMKeyGenerationToolbarViewUri);
+            }
         }
         public void OnKeyGeneration()
         {
@@ -247,24 +262,27 @@ namespace NavigationModule.ViewModels
             parameters.Add("MANU", signer);
             if (signer == "SIX-QA")
             {
-                if(vm.StoreType== Converter.ST(STORETYPE.KMS))
+                if (vm.StoreType == Converter.ST(STORETYPE.KMS))
                     _manager.RequestNavigate("ToolbarRegion", NavigationURI.KMSQAKeyGenerationToolbarViewUri);
                 else
-                    _manager.RequestNavigate("ToolbarRegion", NavigationURI.QAkeyGenerationToolbvarViewUri);                
+                    _manager.RequestNavigate("ToolbarRegion", NavigationURI.QAkeyGenerationToolbvarViewUri);
                 _manager.RequestNavigate("NavigationRegion", new Uri("NavigationHSMKMView", UriKind.Relative));
+                _manager.RequestNavigate("MainRegion", NavigationURI.keyGenerationViewUri, parameters);
             }
             else if (signer == "SIX-ATM")
             {
-                   if(vm.StoreType== Converter.ST(STORETYPE.KMS))
+                if (vm.StoreType == Converter.ST(STORETYPE.KMS))
                     _manager.RequestNavigate("ToolbarRegion", NavigationURI.KMSATMKeyGenerationToolbarViewUri);
                 else
                     _manager.RequestNavigate("ToolbarRegion", NavigationURI.ATMkeyGenerationToolbvarViewUri);
                 _manager.RequestNavigate("NavigationRegion", new Uri("NavigationHSMKMView", UriKind.Relative));
-            }                
+                _manager.RequestNavigate("MainRegion", NavigationURI.HSMStatusViewUri, parameters);
+            }
             else
+            {
                 _manager.RequestNavigate("ToolbarRegion", NavigationURI.MANUKeyGenerationToolbarViewUri);
-
-            _manager.RequestNavigate("MainRegion", NavigationURI.keyGenerationViewUri, parameters);
+                _manager.RequestNavigate("MainRegion", NavigationURI.keyGenerationViewUri, parameters);
+            }            
             _manager.RequestNavigate("StatusRegion", NavigationURI.SIXSoftwareSigningStatusBarView);
             skipNavigate = false;
         }
@@ -287,6 +305,7 @@ namespace NavigationModule.ViewModels
             }
             SIXSoftwareSigningViewModel vm = _container.Resolve<SIXSoftwareSigningViewModel>();
             PackageDrop = _container.Resolve<PackageDropModel>();
+            PackageDrop.DropedPackage = null;
             vm.LoadAllVersions = LoadAllVersions;
             vm.SelectVersion = SelectVersion;            
             enviroment = vm.Enviroment;
@@ -338,9 +357,17 @@ namespace NavigationModule.ViewModels
         private NavigationParameters MakeParameters(string v,string m,string e,string pn)
         {
             NavigationParameters parameters = new NavigationParameters();
+            if (string.IsNullOrEmpty(v))
+                v = "";
             parameters.Add("VERSION", v);
+            if (string.IsNullOrEmpty(m))
+                m = "";
             parameters.Add("PACKAGE_PROVIDER", m);
+            if (string.IsNullOrEmpty(e))
+                e = "";
             parameters.Add("ENV", e);
+            if (string.IsNullOrEmpty(pn))
+                pn = "";
             parameters.Add("PACKAGE_NAME", pn);
             return parameters;
         }
