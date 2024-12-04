@@ -10,6 +10,8 @@ namespace Infrastructure.Certificates
         
         public System.Security.Cryptography.X509Certificates.X509Certificate GetCertifiedManufacturer(string manufacturer) 
         {
+            if (string.IsNullOrEmpty(manufacturer))
+                return null;
             KeyStoreHandling ks = new KeyStoreHandling();
             string manu=manufacturer.Split('-')[0];
             string env = manufacturer.Split('-')[1];
