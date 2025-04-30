@@ -52,9 +52,9 @@ namespace Infrastructure
                 Verifier = c;
                 
             }
-            catch (Exception )
+            catch (Exception e)
             {
-                throw new SignatureVerificationException("Verification of signature failed");
+                throw new SignatureVerificationException("Verification of signature failed: "+e.Message);
             }
             try
             {

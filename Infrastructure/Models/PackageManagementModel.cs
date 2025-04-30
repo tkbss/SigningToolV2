@@ -29,16 +29,16 @@ namespace NavigationModule.Models
         {
             _container = container;           
             SelectedItemChangedCommand = new DelegateCommand<object>(OnItemChanged);
-           
-            
+
+
         }
         private void OnItemChanged(object o)
-        {
+        {            
             if (o is PackageModel)
             {
                 SelectedTreeViewItem = o;
                 SeletectedItem = (PackageModel)o;
-                ManuSoftwareSigning(SeletectedItem);
+                ManuSoftwareSigning(SeletectedItem);                
             }
             else
                 SeletectedItem = null;

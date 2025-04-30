@@ -120,12 +120,12 @@ namespace SoftwareSigning.Model
                     return;
                 }
             }
-            catch (SignatureVerificationException)
+            catch (SignatureVerificationException e)
             {
                 //wirte error to status bar
-                ErrorMessage = "Signature validation failed. Package signing is not possible.";
+                ErrorMessage = "Signature validation failed. Package signing is not possible: "+e.Message;
                 Log(LogData.OPERATION.VERIFICATION, LogData.RESULT.P_VERIFY_ERROR, vm);
-                sbvm.Error("PACKAGE SIGNATURE VERIFICATION", "Signature validation failed. Package signing is not possible.");
+                sbvm.Error("PACKAGE SIGNATURE VERIFICATION", "Signature validation failed: "+e.Message);
                 vm.SignatureStatus = new SolidColorBrush(Colors.Red);
                 vm.CertifcateValidityStatus = new SolidColorBrush(Colors.Red);
                 vm.VerificationCertificate = sec.Verifier;
@@ -133,11 +133,11 @@ namespace SoftwareSigning.Model
                 toolbar.SigningEnabled = false;
                 return;
             }
-            catch (CertificateValidationException)
+            catch (CertificateValidationException e)
             {
                 ErrorMessage = "Signature key validation failed. Package signing is not possible.";
                 Log(LogData.OPERATION.VERIFICATION, LogData.RESULT.P_VERIFY_ERROR, vm);
-                sbvm.Error("PACKAGE SIGNATURE VERIFICATION", "Signature key validation failed. Package signing is not possible.");
+                sbvm.Error("PACKAGE SIGNATURE VERIFICATION", "Signature key validation failed: "+e.Message);
                 vm.SignatureStatus = new SolidColorBrush(Colors.Green);
                 vm.CertifcateValidityStatus = new SolidColorBrush(Colors.Red);
                 vm.VerificationCertificate = sec.Verifier;

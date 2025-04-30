@@ -1,7 +1,10 @@
 ﻿using Infrastructure.Exceptions;
+using NavigationModule.Models;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Xml;
+using Unity;
 //using static System.Net.WebRequestMethods;
 
 
@@ -259,9 +262,9 @@ namespace Infrastructure
         }
         public void MakeSetupInfo(MANUFACTURER m, SIGNER s, STORETYPE st,ENVIROMENT e, string version,string package_name)
         {
-            string f_p = GetVersionExtractionPath(Converter.Manu(m), s,st,e, version,package_name);
-            RemoveSecurityNode(f_p);
-            AddSecurityInfo(f_p);
+            //string f_p = GetVersionExtractionPath(Converter.Manu(m), s,st,e, version,package_name);
+            //RemoveSecurityNode(f_p);
+            //AddSecurityInfo(f_p);
         }
         public string GetVersionExtractionPath(string manu, SIGNER signer,STORETYPE st,ENVIROMENT e, string version,string package_name)
         {
@@ -378,7 +381,7 @@ namespace Infrastructure
             return packages;
 
         }
-        public PackageInfo ReadPackageInfo(string extraction_path, string package_provider)
+        public PackageInfo ReadPackageInfo(string extraction_path, string package_provider, IUnityContainer container)
         {
             PackageInfo pi = new PackageInfo();
             string[] files = Directory.GetFiles(extraction_path);
@@ -426,7 +429,7 @@ namespace Infrastructure
                     continue;
                 pi.Executables.Add(entry);
             }
-            ParseSetupInfo(pi);
+            ParseSetupInfo(pi,container);
             return pi;
 
         }
@@ -541,9 +544,14 @@ namespace Infrastructure
             }
             return true;
         }
-        public void ParseSetupInfo(PackageInfo pi)
+        public void ParseSetupInfo(PackageInfo pi, IUnityContainer container)
         {
+            var mpm = container.Resolve<PackageManagementModel>();
             pi.Security = new List<SecurityInfo>();
+            var manu=mpm.ManuPackages.FirstOrDefault(m => m.Manufacturer == pi.Name);
+            var v=manu.VersionList.FirstOrDefault(v=>v.Version==pi.Version);
+            var p=v.PackageNameList.FirstOrDefault();
+            
             XmlDocument doc = new XmlDocument();
             string info_path = Path.Combine(pi.ExtractionPath, pi.FileName + ".info");
             doc.Load(info_path);
@@ -560,7 +568,10 @@ namespace Infrastructure
                     throw new PackageProcessingException("Incorrect XML element algorithm in node security.");
                 }
                 string exe_path = Path.Combine(pi.ExtractionPath, si.FileName);
-                si.ComputedDigest = s.ComputeMessageDigest(exe_path);
+                if (string.IsNullOrEmpty(si.ComputedDigest))
+                {
+                    si.ComputedDigest = s.ComputeMessageDigest(exe_path);
+                }
                 pi.Security.Add(si);
             }
         }

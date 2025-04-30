@@ -1,4 +1,5 @@
-﻿using Prism.Mvvm;
+﻿using Infrastructure;
+using Prism.Mvvm;
 using System.Collections.ObjectModel;
 
 namespace NavigationModule.Models
@@ -23,6 +24,7 @@ namespace NavigationModule.Models
                 SetProperty(ref package_name_list, value);
             }
         }
+        public List<SecurityInfo> Security { get; set; } = new List<SecurityInfo>();
 
     }
 }

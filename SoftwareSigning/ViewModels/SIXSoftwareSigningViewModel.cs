@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Input;
 using Infrastructure.Certificates;
 using System;
+using System.Windows.Controls;
 
 namespace SoftwareSigning.ViewModels
 {
@@ -158,7 +159,7 @@ namespace SoftwareSigning.ViewModels
             PackageInfo pi;
             try
             {
-                pi = pp.ReadPackageInfo(ep, PackageProvider);
+                pi = pp.ReadPackageInfo(ep, PackageProvider,_container);
 
             }
             catch (Exception ex)
@@ -211,6 +212,7 @@ namespace SoftwareSigning.ViewModels
             PI = null;
             PackageDrop = _container.Resolve<PackageDropModel>();
             SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
+            
             SecurityInfo.Clear();            
             SelectedVersion = (string)navigationContext.Parameters["VERSION"];
             PackageProvider=(string)navigationContext.Parameters["PACKAGE_PROVIDER"];
@@ -228,24 +230,27 @@ namespace SoftwareSigning.ViewModels
                 PSSVisibility = Visibility.Visible;
             SetKeyStatus();
             CertifiedCertificates();
-            SecurityProcessingModel sp = new SecurityProcessingModel();
+            //SecurityProcessingModel sp = new SecurityProcessingModel();
             if (string.IsNullOrEmpty(SelectedVersion))
             {
                 SecurityProcessingModel spm = new SecurityProcessingModel();
                 spm.PackageParsingError(_container);
                 sbvm.Success("PACKAGE SIGNING", "No Packet selected or dropped for signing");
+                
                 return;
             }
             if(LoadPackageInfo()==false)
-            {                
+            {
+                
                 return;
             }
-            sp.SignatureVerification(_container);            
-            sp.DetermineSigningStatus(_container);            
+            //sp.SignatureVerification(_container);            
+            //sp.DetermineSigningStatus(_container);            
             if (Origin == "SIX-ATM-DEVICE" && PackageVerification==true)
             {                
                 sbvm.Success("PACKAGE SIGNATURE VERIFICATION", "Packet successfull verified and ready for installation on ATM.");
             }
+            
         }
         private void CertifiedCertificates() 
         {
@@ -282,13 +287,14 @@ namespace SoftwareSigning.ViewModels
         }
         public bool LoadPackageInfo()
         {
+            
             ErrorMessage = string.Empty;
             PackageVerification = false;            
             PackageProcessing pp = _container.Resolve<PackageProcessing>();
             var packagedrop=_container.Resolve<PackageDropModel>();
-            SoftwareSigningToolbarViewModel tbvm = _container.Resolve<SoftwareSigningToolbarViewModel>();
+            SoftwareSigningToolbarViewModel tbvm = _container.Resolve<SoftwareSigningToolbarViewModel>();            
             SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
-
+            SecurityProcessingModel sp = new SecurityProcessingModel();
             SIGNER s = Converter.Signer(Origin);
             STORETYPE st = Converter.ST(StoreType);
             ENVIROMENT e = Converter.Env(Enviroment);
@@ -296,7 +302,7 @@ namespace SoftwareSigning.ViewModels
             PackageInfo pi;
             try
             {
-                pi = pp.ReadPackageInfo(ep,PackageProvider);
+                pi = pp.ReadPackageInfo(ep,PackageProvider,_container);
                 
             }
             catch(Exception ex)
@@ -315,13 +321,16 @@ namespace SoftwareSigning.ViewModels
                 tbvm.Log(LogData.OPERATION.IMPORT, LogData.RESULT.IMPORT_ERROR, this);
                 sbvm.Error("SELECTED PACKAGE PARSING", tbvm.ErrorMessage);
                 PackageVerification = false;
-                SecurityProcessingModel sp = new SecurityProcessingModel();
-                sp.PackageParsingError(_container);
+                //SecurityProcessingModel sp = new SecurityProcessingModel();
+                sp.PackageParsingError(_container);                
                 return false;
             }
             PI = new PackageInfoModel(pi); 
             packagedrop.LoadedPackage = PI;
             packagedrop.LoadedPackage.DropStatus = "PACKAGE LOADED SUCCESSFULL FOR "+Origin+ " "+Enviroment;
+            
+            sp.SignatureVerification(_container);
+            sp.DetermineSigningStatus(_container);
             return true;
             
         }

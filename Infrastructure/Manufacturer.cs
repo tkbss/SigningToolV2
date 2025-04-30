@@ -9,8 +9,8 @@ namespace Infrastructure
     public class Manufacturer
     {
         public static string[] manu = { "WINCOR", "DIEBOLD", "NCR", "GLORY", "MVS", "MSIX","PREMA","SUZOH", "MVSDN" };
-        public static string[] manu_abr = { "MVS", "SIX", "NCR", "WNI", "GGS", "DSB", "MSIX","PRE","SUZ", "MDN" };
+        public static string[] manu_abr = { "MVS", "SIX", "NCR", "WNI", "GGS", "DSB", "MSIX","PRE","SUZ", "MVSDN" };
         public static Dictionary<string, string> ManuAbrMapping = new Dictionary<string, string>() {{ "MVS", "MVS" },
-        {"SIX","MSIX"}, {"NCR","NCR"}, {"WINCOR","WNI"}, {"GLORY","GGS" }, {"DIEBOLD","DSB" }, {"MSIX","SIX" },{"PREMA","PRE"},{"SUZOH","SUZ" },{"MVSDN","MDN" } };
+        {"SIX","MSIX"}, {"NCR","NCR"}, {"WINCOR","WNI"}, {"GLORY","GGS" }, {"DIEBOLD","DSB" }, {"MSIX","SIX" },{"PREMA","PRE"},{"SUZOH","SUZ" },{"MVSDN","MVSDN" } };
     }
 }

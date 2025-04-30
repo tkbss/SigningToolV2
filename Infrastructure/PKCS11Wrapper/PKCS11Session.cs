@@ -132,9 +132,8 @@ public class PKCS11Session : IPKCS11Session
             throw HSMDriverExceptionFactory.Create(-1,HSMDriverErrorDefinitions.DRIVER_NOT_INITIALIZED);
         }
         try
-        {
-            _session = _library.GetSlot.OpenSession(st);
-            
+        {        
+            _session = _library.GetSlot.OpenSession(st); 
 
         }            
         catch(Exception e)

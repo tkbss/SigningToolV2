@@ -196,10 +196,21 @@ namespace NavigationModule.ViewModels
             else
                 _manager.RequestNavigate("ToolbarRegion", NavigationURI.signingToolbarViewUri);
 
-            if (s==SIGNER.MANU)
+            if (s == SIGNER.MANU)
                 _manager.RequestNavigate("MainRegion", NavigationURI.ManuSoftwareSigningViewUri, parameters);
             else
-                _manager.RequestNavigate("MainRegion", NavigationURI.SIXsigningViewUri, parameters);
+            {
+                SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();
+                SoftwareSigningToolbarViewModel toolbar = _container.Resolve<SoftwareSigningToolbarViewModel>();
+                toolbar.IsOperationInProgress = true;
+                signing.SelectedVersion = pm.Version;
+                signing.PackageProvider = pm.Manu;
+                signing.Enviroment = enviroment;
+                signing.PackageName = pm.PackageName;
+                signing.LoadPackageInfo();
+                toolbar.IsOperationInProgress = false;
+                //_manager.RequestNavigate("MainRegion", NavigationURI.SIXsigningViewUri, parameters);
+            }
 
         }
         private void OnChangeSession()

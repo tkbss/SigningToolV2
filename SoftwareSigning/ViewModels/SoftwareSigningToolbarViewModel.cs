@@ -98,7 +98,7 @@ namespace SoftwareSigning.ViewModels
             PackageInfo pi;
             try
             {
-                pi = pp.ReadPackageInfo(ep, viewdata.PackageProvider);
+                pi = pp.ReadPackageInfo(ep, viewdata.PackageProvider,_container);
 
             }
             catch (Exception ex)
