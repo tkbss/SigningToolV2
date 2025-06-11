@@ -28,6 +28,11 @@ namespace Infrastructure
                 return manu;
             }
         }
+        public static string Abrevation(string manu) 
+        {
+            var r = Manufacturer.ManuAbrMapping.First(p => p.Key == manu);
+            return r.Value;
+        }
         static public string Vendor(string abr)
         {            
             var r = Manufacturer.ManuAbrMapping.First(p=>p.Value==abr);

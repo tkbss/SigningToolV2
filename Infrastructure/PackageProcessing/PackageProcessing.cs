@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Xml;
+using System.Xml.Linq;
 using Unity;
 //using static System.Net.WebRequestMethods;
 
@@ -548,17 +549,30 @@ namespace Infrastructure
         {
             var mpm = container.Resolve<PackageManagementModel>();
             pi.Security = new List<SecurityInfo>();
-            var manu=mpm.ManuPackages.FirstOrDefault(m => m.Manufacturer == pi.Name);
-            var v=manu.VersionList.FirstOrDefault(v=>v.Version==pi.Version);
-            var p=v.PackageNameList.FirstOrDefault();
+            PackageModel p = null;
+            var manu=mpm.ManuPackages.FirstOrDefault(m => Converter.Abrevation(m.Manufacturer) == pi.Vendor);
+            if ((manu!=null))
+            {
+                var v = manu.VersionList.FirstOrDefault(v => v.Version == pi.Version);
+                if ((v!=null))
+                {
+                    p = v.PackageNameList.FirstOrDefault(pn => pn.PackageName == pi.Name);
+                    if(p.DigestList==null)
+                    {
+                        p.DigestList = new List<string>();
+                    }
+                }                
+            }
+            
             
             XmlDocument doc = new XmlDocument();
             string info_path = Path.Combine(pi.ExtractionPath, pi.FileName + ".info");
             doc.Load(info_path);
             XmlNodeList nodes = doc.DocumentElement.SelectNodes(xml_security_p);
             SecurityProcessing s = new SecurityProcessing();
+            int NodeCount = 0;
             foreach (XmlNode node in nodes)
-            {
+            {                
                 SecurityInfo si = new SecurityInfo();
                 si.FileName = node.SelectSingleNode("filename").InnerText;                
                 si.Digest = node.SelectSingleNode("digest").InnerText;
@@ -567,14 +581,18 @@ namespace Infrastructure
                 {
                     throw new PackageProcessingException("Incorrect XML element algorithm in node security.");
                 }
-                string exe_path = Path.Combine(pi.ExtractionPath, si.FileName);
-                if (string.IsNullOrEmpty(si.ComputedDigest))
+                string exe_path = Path.Combine(pi.ExtractionPath, si.FileName);                
+                if (p.DigestList.Count<NodeCount+1)
                 {
                     si.ComputedDigest = s.ComputeMessageDigest(exe_path);
+                    p.DigestList.Add(si.ComputedDigest);
                 }
+                si.ComputedDigest = p.DigestList[NodeCount];
                 pi.Security.Add(si);
+                NodeCount++;
             }
         }
+        
         public bool MapPackageName(PackageInfo pi,MANUFACTURER m)
         {
             if (m == MANUFACTURER.SIX)

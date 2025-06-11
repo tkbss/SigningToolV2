@@ -31,6 +31,15 @@ namespace NavigationModule.Models
                 SetProperty(ref pn, value);
             }
         }
+        List<string> digestList;
+        public List<string> DigestList
+        {
+            get { return digestList; }
+            set
+            {
+                SetProperty(ref digestList, value);
+            }
+        }
         bool is_selected;
         public bool IsSelected
         {
