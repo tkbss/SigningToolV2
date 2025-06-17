@@ -103,7 +103,7 @@ namespace SoftwareSigning.ViewModels
             }
             catch (Exception ex)
             {                
-                sbvm.Error("PACKAGE PARSING", ex.Message);                
+                sbvm.Error("PACKAGE PARSING "+ viewdata.PackageName, ex.Message);                
                 return;
             }
             
@@ -111,17 +111,17 @@ namespace SoftwareSigning.ViewModels
             sp.SignatureVerification(_container);
             if(viewdata.PackageVerification==true)
             {
-                sbvm.Success("PACKAGE SIGNATURE VERIFICATION", "Packet successfull verified and ready for installation on ATM.");
+                sbvm.Success("PACKAGE SIGNATURE VERIFICATION", "Packet successfull verified and ready for installation on ATM: "+ viewdata.PackageName);
             }
         }
-        private void OnRemovePackage()
+        public void OnRemovePackage()
         {
             SIXSoftwareSigningViewModel viewdata = _container.Resolve<SIXSoftwareSigningViewModel>();
             SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
             PackageDropModel pdm=_container.Resolve<PackageDropModel>();
             if (string.IsNullOrEmpty(viewdata.SelectedVersion)==true)
             {
-                sbvm.Error("REMOVE PACAKGE", "No version selected. Cannot remove package.");
+                sbvm.Error(viewdata.Enviroment+" REMOVE PACAKGE", "No version selected. Cannot remove package: "+ viewdata.PackageName);
                 return;
             }
             PackageProcessing pp = _container.Resolve<PackageProcessing>();
@@ -135,8 +135,8 @@ namespace SoftwareSigning.ViewModels
                 if (s == SIGNER.QA)
                     pdm.DropedPackage = null;
                 if(s==SIGNER.ATM)
-                    pdm.LoadedPackage = null;
-                sbvm.Success("REMOVE PACKAGE", "Package successfull removed.");
+                    pdm.DropedPackage = null;
+                sbvm.Success(viewdata.Enviroment + " REMOVE PACKAGE", "Package successfull removed: "+ viewdata.PackageName);
                 viewdata.SecurityInfo.Clear();
                 viewdata.PI = null;
                 SecurityProcessingModel sp = new SecurityProcessingModel();
@@ -145,7 +145,7 @@ namespace SoftwareSigning.ViewModels
             }
             catch(Exception)
             {
-                sbvm.Error("REMOVE PACKAGE", "Error during remove operation.");
+                sbvm.Error(viewdata.Enviroment + " REMOVE PACKAGE", "Error during remove operation: " + viewdata.PackageName);
             }
            
 
@@ -165,7 +165,7 @@ namespace SoftwareSigning.ViewModels
             string fn = pp.GetPackageFileName(signing.PackageProvider, s, st, e, signing.PI.Version, signing.PackageName);            
             if (pp.PackageSigFileExists(m, e, s, st, signing.PI.Version, signing.PackageName) == false)
             {
-                sbvm.Error("COPY PACKAGE", "No signature file exists. Package copy not possible");
+                sbvm.Error("COPY PACKAGE", "No signature file exists. Package copy not possible: "+ signing.PackageName);
                 return;
                 
             }
@@ -184,7 +184,7 @@ namespace SoftwareSigning.ViewModels
             
             await pp.CopyPackageAsync(m,e,s,st, signing.PI.Version, signing.PackageName,targetENV,  targetS);
         }
-        private async Task OnExportPackageAsync()
+        public async Task OnExportPackageAsync()
         {
             IsOperationInProgress = true;
             SIXSoftwareSigningStatusBarViewModel sbvm = _container.Resolve<SIXSoftwareSigningStatusBarViewModel>();
@@ -196,7 +196,7 @@ namespace SoftwareSigning.ViewModels
             {               
                 if(string.IsNullOrEmpty(signingview.PackageName) || string.IsNullOrEmpty(signingview.SelectedVersion))
                 {
-                    sbvm.Error("EXPORT PACKAGE", "No package selected. Export operation aborted.");
+                    sbvm.Error("EXPORT PACKAGE " + signingview.PackageName, "No package selected. Export operation aborted.");
                     IsOperationInProgress = false;
                     return;
                 }
@@ -207,7 +207,7 @@ namespace SoftwareSigning.ViewModels
                 string targetPath = string.Empty;
                 if (pp.PackageSigFileExists(m, e, s, st, signingview.PI.Version, signingview.PackageName) == false)
                 {
-                    sbvm.Error("EXPORT PACKAGE", "No signature file exists. Package export not possible");
+                    sbvm.Error("EXPORT PACKAGE " + signingview.PackageName, "No signature file exists. Package export not possible: "+ signingview.PackageName);
                     IsOperationInProgress = false;
                     return;
                 }
@@ -239,7 +239,7 @@ namespace SoftwareSigning.ViewModels
                 }
                 await pp.ExportPackage(m,e, s,st, signingview.PI.Version,signingview.PackageName, targetPath);
                 ErrorMessage = string.Empty;                
-                sbvm.Success("EXPORT PACKAGE", "Package successfull exported to:"+targetPath);
+                sbvm.Success("EXPORT PACKAGE " + signingview.PackageName, "Package successfull exported to:"+targetPath);
                 Log(LogData.OPERATION.EXPORT, LogData.RESULT.EXPORT_SUCCESS, signingview);
                 IsOperationInProgress = false;
             }
@@ -247,7 +247,7 @@ namespace SoftwareSigning.ViewModels
             {
                 ErrorMessage = e.Message;
                 Log(LogData.OPERATION.EXPORT, LogData.RESULT.EXPORT_ERROR, signingview);
-                sbvm.Error("EXPORT PACKAGE", "Processing error: "+e.Message);
+                sbvm.Error("EXPORT PACKAGE " + signingview.PackageName, "Processing error: "+e.Message);
                 IsOperationInProgress = false;
             }
         }
@@ -296,7 +296,7 @@ namespace SoftwareSigning.ViewModels
             {
                 ErrorMessage = "Password for key store not set";
                 Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_ERROR, signing);
-                sbvm.Error("PACKAGE SIGNING", ErrorMessage);
+                sbvm.Error("PACKAGE SIGNING "+ signing.PackageName, ErrorMessage);
                 IsOperationInProgress = false;
                 return;
             }
@@ -319,7 +319,7 @@ namespace SoftwareSigning.ViewModels
                 {
                     ErrorMessage = "No certificate for this manufacturer imported. Cannot sign package";
                     Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_ERROR, signing);
-                    sbvm.Error("PACKAGE SIGNING", ErrorMessage);
+                    sbvm.Error("PACKAGE SIGNING "+ signing.PackageName, ErrorMessage);
                     SigningEnabled = false;
                     ExportEnabled = false;
                     IsOperationInProgress = false;
@@ -342,7 +342,7 @@ namespace SoftwareSigning.ViewModels
                 }
                 
                 Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_SUCCESS, signing);
-                sbvm.Success("PACKAGE SIGNING", "Package signed successful");
+                sbvm.Success("PACKAGE SIGNING", "Package signed successful: "+ signing.PackageName);
                 
                 sp.DetermineSigningStatus(_container);
                 ExportEnabled = true;
@@ -351,7 +351,7 @@ namespace SoftwareSigning.ViewModels
             {
                 ErrorMessage = "Password for key store not correct.";
                 Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_ERROR, signing);
-                sbvm.Error("PACKAGE SIGNING", ErrorMessage);
+                sbvm.Error("PACKAGE SIGNING "+ signing.PackageName, ErrorMessage);
                 StorePasswordSafe pwds = _container.Resolve<StorePasswordSafe>();
                 pwds.DeleteStorePassword(m,env);                
                 ExportEnabled = false;
@@ -361,7 +361,7 @@ namespace SoftwareSigning.ViewModels
             {
                 ErrorMessage = "Error during package signing.";
                 Log(LogData.OPERATION.SIGNING, LogData.RESULT.SIGNING_ERROR, signing);
-                sbvm.Error("PACKAGE SIGNING", "Error during package signing.");
+                sbvm.Error("PACKAGE SIGNING "+ signing.PackageName, "Error during package signing.");
                 ExportEnabled = false;
                 IsOperationInProgress = false;
             }

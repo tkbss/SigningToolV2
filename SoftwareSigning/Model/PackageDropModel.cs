@@ -73,15 +73,15 @@ namespace SoftwareSigning.Model
                 SetProperty(ref _mpm, value);
             }
         }
-        PackageInfoModel? _loadedPackage;
-        public PackageInfoModel? LoadedPackage
-        {
-            get { return _loadedPackage; }
-            set
-            {
-                SetProperty(ref _loadedPackage, value);
-            }
-        }
+        //PackageInfoModel? _loadedPackage;
+        //public PackageInfoModel? LoadedPackage
+        //{
+        //    get { return _loadedPackage; }
+        //    set
+        //    {
+        //        SetProperty(ref _loadedPackage, value);
+        //    }
+        //}
         //public void SetDropedPackage() 
         //{
         //    SIXSoftwareSigningViewModel signing = _container.Resolve<SIXSoftwareSigningViewModel>();

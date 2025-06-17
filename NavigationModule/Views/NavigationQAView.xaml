@@ -32,9 +32,7 @@
             <Button Grid.Row="2" Content="KEY GENERATION" Command="{Binding KeyGenerationCommand}" Width="120" 
                     Visibility="{Binding Path=KGVisibility}" Margin="5"/>
             
-            <Button Grid.Row="4" Content="QA" Command="{Binding QANavigationCommand}" Width="120" Margin="5" />
-            <Button Grid.Row="5" Content="ATM-TEST" Command="{Binding NavigationATMTestCommand}" Width="120" Margin="5" />
-            <Button Grid.Row="6" Content="ATM-PROD" Command="{Binding NavigationATMPRODCommand}" Width="120" Margin="5" />
+            
             <GroupBox Grid.Row="7"  Header="SOFTWARE SIGNING" Margin="5"  FontFamily="Arial" FontSize="18" FontWeight="Bold">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -47,7 +45,7 @@
                             <TextBlock Text="DROP AREA" FontSize="17" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
                     </GroupBox>
-                    <GroupBox Header="PACKAGE DROP STATUS" Grid.Row="1" Grid.Column="0" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" Margin="5,2" >
+                    <GroupBox Header="LAST PACKAGE DROP" Grid.Row="1" Grid.Column="0" Style="{DynamicResource SoftwareSigningGroupBoxStyle}" Margin="5,2" >
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="35"/>

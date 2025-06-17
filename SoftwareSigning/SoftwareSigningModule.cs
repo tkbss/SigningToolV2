@@ -23,10 +23,12 @@ namespace SoftwareSigning
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
+
+            containerRegistry.RegisterSingleton<PackageDropModel>();
             containerRegistry.RegisterSingleton<SIXSoftwareSigningViewModel>();
             containerRegistry.RegisterSingleton<SoftwareSigningToolbarViewModel>();
             containerRegistry.RegisterSingleton<SIXSoftwareSigningStatusBarViewModel>();
-            containerRegistry.RegisterSingleton<PackageDropModel>();
+            
 
             containerRegistry.Register<SIXSoftwareSigningStatusBarView>();
             containerRegistry.Register<ManuSoftwareSigningView>();

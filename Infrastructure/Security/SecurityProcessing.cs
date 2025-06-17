@@ -86,7 +86,7 @@ namespace Infrastructure
             FileStream fs = File.Open(fp, FileMode.Open);       
 
             SHA256 mySHA256 = SHA256.Create();
-            byte[] hashValue = mySHA256.ComputeHash(fs);
+            var hashValue = mySHA256.ComputeHash(fs);
             fs.Close();
             return ByteArrayToString(hashValue);
         }

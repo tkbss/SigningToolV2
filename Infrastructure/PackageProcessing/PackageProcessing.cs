@@ -430,7 +430,7 @@ namespace Infrastructure
                     continue;
                 pi.Executables.Add(entry);
             }
-            ParseSetupInfo(pi,container);
+            ParseSetupInfoAsync(pi,container);
             return pi;
 
         }
@@ -475,7 +475,7 @@ namespace Infrastructure
             }
             return true;
         }
-        public void ParseSetupInfo(PackageInfo pi, IUnityContainer container)
+        public void ParseSetupInfoAsync(PackageInfo pi, IUnityContainer container)
         {
             var mpm = container.Resolve<PackageManagementModel>();
             pi.Security = new List<SecurityInfo>();
@@ -512,12 +512,14 @@ namespace Infrastructure
                     throw new PackageProcessingException("Incorrect XML element algorithm in node security.");
                 }
                 string exe_path = Path.Combine(pi.ExtractionPath, si.FileName);                
-                if (p.DigestList.Count<NodeCount+1)
+                if (p==null || p.DigestList.Count<NodeCount+1)
                 {
                     si.ComputedDigest = s.ComputeMessageDigest(exe_path);
-                    p.DigestList.Add(si.ComputedDigest);
+                    if(p!=null)
+                        p.DigestList.Add(si.ComputedDigest);
                 }
-                si.ComputedDigest = p.DigestList[NodeCount];
+                if(p!=null)
+                    si.ComputedDigest = p.DigestList[NodeCount];
                 pi.Security.Add(si);
                 NodeCount++;
             }

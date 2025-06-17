@@ -326,8 +326,8 @@ namespace SoftwareSigning.ViewModels
                 return false;
             }
             PI = new PackageInfoModel(pi); 
-            packagedrop.LoadedPackage = PI;
-            packagedrop.LoadedPackage.DropStatus = "PACKAGE LOADED SUCCESSFULL FOR "+Origin+ " "+Enviroment;
+            //packagedrop.LoadedPackage = PI;
+            //packagedrop.LoadedPackage.DropStatus = "PACKAGE LOADED SUCCESSFULL FOR "+Origin+ " "+Enviroment;
             
             sp.SignatureVerification(_container);
             sp.DetermineSigningStatus(_container);

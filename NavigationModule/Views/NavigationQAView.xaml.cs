@@ -46,7 +46,7 @@ namespace NavigationModule.Views
             }
         }
 
-        private void Rectangle_Drop(object sender, DragEventArgs e)
+        private async void Rectangle_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -54,7 +54,7 @@ namespace NavigationModule.Views
                 if (File.Exists(docPath[0]))
                 {
                     NavigationViewModel vm = (NavigationViewModel)DataContext;
-                    vm.PackageDrop.PackageDrop(docPath[0]);
+                    await vm.PackageDrop.PackageDrop(docPath[0]);                    
                 }
             }
         }
