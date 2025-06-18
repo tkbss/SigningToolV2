@@ -4,6 +4,7 @@
     {
         public string FileName { get; set; }
         public string Vendor { get; set; }
+        public string PackageProvider { get; set; }
         public string Name { get; set; }
         public string Version { get; set; }
         public string Date { get; set; }

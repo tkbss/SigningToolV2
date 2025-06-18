@@ -209,6 +209,7 @@ namespace SoftwareSigning.Model
                 pp.RemovePackage(m, s, st, e, pi.Version, pi.Name);
                 return false;
             }
+            signing.Vendor = pi.Vendor;
             signing.PackageProvider = Converter.Vendor(pi.Vendor);
             signing.SelectedVersion = pi.Version;
             signing.PackageName = pi.Name;

@@ -33,8 +33,7 @@
             Visibility="{Binding Path=KGVisibility}" Margin="5"/>
             
             <Button Grid.Row="4" Content="QA" Command="{Binding QANavigationCommand}" Width="120" Margin="5" />
-            <Button Grid.Row="5" Content="ATM-TEST" Command="{Binding NavigationATMTestCommand}" Width="120" Margin="5" />
-            <Button Grid.Row="6" Content="ATM-PROD" Command="{Binding NavigationATMPRODCommand}" Width="120" Margin="5" />
+            
             <GroupBox Grid.Row="7"  Header="KEY MANAGEMENT" Margin="5"  FontFamily="Arial" FontSize="18" FontWeight="Bold">
                 
                     

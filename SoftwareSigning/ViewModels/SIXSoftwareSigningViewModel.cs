@@ -52,6 +52,7 @@ namespace SoftwareSigning.ViewModels
 
         public string Signer { get; set; }
         public string PackageProvider { get; set; }
+        public string Vendor { get; set; }
         public string SignerType { get; set; }
         public string PackageName { get; set; }
         public string ErrorMessage { get; set; }

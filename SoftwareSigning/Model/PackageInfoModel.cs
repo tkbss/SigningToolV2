@@ -19,6 +19,7 @@ namespace SoftwareSigning.Model
         {
             PackageInfo pi = new PackageInfo();            
             pi.Vendor=Vendor;
+            pi.PackageProvider = PackageProvider;
             pi.Version=Version;
             pi.Name=Name;
             pi.ExtractionPath=ExtractionPath;
@@ -31,7 +32,8 @@ namespace SoftwareSigning.Model
         }
         public PackageInfoModel(PackageInfo pi)
         {
-            Vendor = Converter.Vendor(pi.Vendor);
+            Vendor = pi.Vendor;
+            PackageProvider = Converter.Vendor(pi.Vendor);
             Version = pi.Version;
             Name = pi.Name;
             ExtractionPath = pi.ExtractionPath;
@@ -61,6 +63,15 @@ namespace SoftwareSigning.Model
             set
             {
                 SetProperty(ref vendor, value);
+            }
+        }
+        string packageprovider;
+        public string PackageProvider
+        {
+            get { return packageprovider; }
+            set
+            {
+                SetProperty(ref packageprovider, value);
             }
         }
         string version;

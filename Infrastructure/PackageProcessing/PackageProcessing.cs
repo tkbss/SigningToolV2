@@ -613,41 +613,7 @@ namespace Infrastructure
                 return false;
             }
         }
-        private void Backup(string extraction_path)
-        {
-            if (Directory.EnumerateFiles(extraction_path).Count() == 0)
-                return;
-            foreach(string fn in Directory.EnumerateFiles(extraction_path))
-            {
-                string f = Path.GetFileNameWithoutExtension(fn);
-                string fileName = Path.GetFileName(fn);                
-                string[] fn_name_parts = f.Split(fn_seperator, StringSplitOptions.RemoveEmptyEntries);
-                string version = fn_name_parts[2];
-                string vers_path = Path.Combine(extraction_path, version);
-                if (Directory.Exists(vers_path) == false)
-                {
-                    Directory.CreateDirectory(vers_path);
-                }
-                else
-                {
-                    Directory.Delete(vers_path, true);
-                    Directory.CreateDirectory(vers_path);
-                }
-                Directory.Move(fn, Path.Combine(vers_path, fileName));
-            }
-        }
-        private void Unzip(string target_dir,string zip_file)
-        {
-            using (ZipArchive archive = ZipFile.OpenRead(zip_file))
-            {
-                foreach (ZipArchiveEntry entry in archive.Entries)
-                {
-                    entry.ExtractToFile(Path.Combine(target_dir, entry.FullName));
-                    
-                }
-            }
-
-        }
+        
         private async Task UnzipAsync(string target_dir, string zip_file)
         {
             await Task.Run(async () =>
