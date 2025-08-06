@@ -35,8 +35,7 @@
             </Border>
             <Button Grid.Row="1" Content="CHANGE SESSION" Command="{Binding Path=ChangeSessionCommand}" Width="120" Margin="5" />
             <Button Grid.Row="2" Content="KEY GENERATION" Command="{Binding Path=KeyGenerationCommand}" Width="120" Margin="5"/>
-            <Button Grid.Row="3" Content="IMPORT PACAKGE" Command ="{Binding ImportPackageCommand}" Width="120" Margin="5"/>
-            <Button Grid.Row="4" Content="OPERATION TRACE" Command="{Binding ShowTraceCommand}" Width="120" Margin="5"/>
+            <Button Grid.Row="3" Content="IMPORT PACAKGE" Command ="{Binding ImportPackageCommand}" Width="120" Margin="5"/>            
                 <GroupBox Grid.Row="5" Header="SOFTWARE SIGNING" Margin="5" FontFamily="Arial" FontSize="18" FontWeight="Bold" >
                     <GroupBox Header="{Binding Path=ManuPackages}" Margin="3">
                         <Grid>

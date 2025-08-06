@@ -263,10 +263,91 @@ namespace Infrastructure
         }
         public void MakeSetupInfo(MANUFACTURER m, SIGNER s, STORETYPE st,ENVIROMENT e, string version,string package_name)
         {
-            //string f_p = GetVersionExtractionPath(Converter.Manu(m), s,st,e, version,package_name);
-            //RemoveSecurityNode(f_p);
-            //AddSecurityInfo(f_p);
+            if (s==SIGNER.MANU)
+            {
+                string f_p = GetVersionExtractionPath(Converter.Manu(m), s, st, e, version, package_name);
+                RemoveSecurityNode(f_p);
+                AddSecurityInfo(f_p);
+            }
+            
         }
+        private XmlDocument LoadDoc(string extraction_path, out PackageInfo pi)
+        {
+            string[] files = Directory.GetFiles(extraction_path);
+            pi = new PackageInfo();
+            if (files.Count() == 0)
+                return null;
+            string fn = files[0];
+            foreach (string f in files)
+            {
+                if (Path.GetExtension(f) == ".info")
+                {
+                    fn = f;
+                    break;
+                }
+            }
+            ValidateFileName(fn, pi);
+            pi.ExtractionPath = extraction_path;
+            string info_path = Path.Combine(pi.ExtractionPath, pi.FileName + ".info");
+            XmlDocument doc = new XmlDocument();
+            doc.Load(info_path);
+            return doc;
+        }
+
+        private void RemoveSecurityNode(string extraction_path)
+        {
+            PackageInfo pi = null;
+            XmlDocument doc = LoadDoc(extraction_path, out pi);
+            if (doc == null)
+                return;
+            XmlNode security_node = doc.DocumentElement.SelectSingleNode(xml_security);
+            if (security_node != null)
+                security_node.ParentNode.RemoveChild(security_node);
+            string info_path = Path.Combine(pi.ExtractionPath, pi.FileName + ".info");
+            doc.Save(info_path);
+        }
+        private void AddSecurityInfo(string extraction_path)
+        {
+            PackageInfo pi = null;
+            XmlDocument doc = LoadDoc(extraction_path, out pi);
+            XmlElement sec = doc.CreateElement("security");
+            XmlNode info_node = doc.DocumentElement.SelectSingleNode(@"/infodata");
+            info_node.AppendChild(sec);
+            List<string> install_files = new List<string>();
+            foreach (string fp in Directory.GetFiles(extraction_path))
+            {
+                string e = Path.GetExtension(fp);
+                if (e == ".info")
+                    continue;
+                if (e == ".sign")
+                    continue;
+                if (e == ".export")
+                    continue;
+                install_files.Add(fp);
+            }
+            SecurityProcessing sp = new SecurityProcessing();
+
+            foreach (string exfp in install_files)
+            {
+                string filename = Path.GetFileName(exfp);
+                XmlElement fs = doc.CreateElement("filesecurity");
+                XmlElement alg = doc.CreateElement("algorithm");
+                alg.InnerText = "2.16.840.1.101.3.4.2.1";
+                XmlElement fn = doc.CreateElement("filename");
+                fn.InnerText = filename;
+                XmlElement dg = doc.CreateElement("digest");
+                dg.InnerText = sp.ComputeMessageDigest(exfp);
+
+                sec.AppendChild(fs);
+                fs.AppendChild(alg);
+                fs.AppendChild(fn);
+                fs.AppendChild(dg);
+            }
+            string info_path = Path.Combine(pi.ExtractionPath, pi.FileName + ".info");
+            doc.Save(info_path);
+        }
+
+
         public string GetVersionExtractionPath(string manu, SIGNER signer,STORETYPE st,ENVIROMENT e, string version,string package_name)
         {
             if (string.IsNullOrEmpty(package_name) == true)
